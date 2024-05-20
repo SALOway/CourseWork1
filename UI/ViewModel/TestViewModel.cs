@@ -19,13 +19,13 @@ public class TestViewModel(Test test)
     {
         get
         {
-            if (MainWindow.CurrentUser == null)
+            if (AppState.CurrentUser == null)
             {
-                throw new NullReferenceException(nameof(MainWindow.CurrentUser));
+                throw new NullReferenceException(nameof(AppState.CurrentUser));
             }
 
-            return Test.TestAttempts.Where(a => a.User.Id == MainWindow.CurrentUser.Id 
-                                                && MainWindow.CurrentUser.Role == Core.Enums.UserRole.Student)
+            return Test.TestAttempts.Where(a => a.User.Id == AppState.CurrentUser.Id 
+                                                && AppState.CurrentUser.Role == Core.Enums.UserRole.Student)
                                     .Count();
         }
     }
@@ -33,13 +33,13 @@ public class TestViewModel(Test test)
     {
         get
         {
-            if (MainWindow.CurrentUser == null)
+            if (AppState.CurrentUser == null)
             {
-                throw new NullReferenceException(nameof(MainWindow.CurrentUser));
+                throw new NullReferenceException(nameof(AppState.CurrentUser));
             }
 
-            return Test.TestAttempts.Where(a => a.User.Id == MainWindow.CurrentUser.Id
-                                                && MainWindow.CurrentUser.Role == Core.Enums.UserRole.Student)
+            return Test.TestAttempts.Where(a => a.User.Id == AppState.CurrentUser.Id
+                                                && AppState.CurrentUser.Role == Core.Enums.UserRole.Student)
                                     .OrderByDescending(attempt => attempt.StartedAt)
                                     .FirstOrDefault();
         }

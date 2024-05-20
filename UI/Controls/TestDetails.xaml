@@ -15,36 +15,49 @@
     </UserControl.Resources>
     <Grid>
         <Button Content="Back" Width="70" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0" Click="Back_Click"/>
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="75"/>
+                <ColumnDefinition MinWidth="75"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+                <RowDefinition MinHeight="30"/>
+            </Grid.RowDefinitions>
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Label Content="Test Details"/>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Test.Name"/>
-                <TextBlock Text="{Binding CurrentTest.Name}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Test.Description:"/>
-                <TextBlock Text="{Binding CurrentTest.Description}"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Test.Attempts:"/>
-                <TextBlock>
-                    <TextBlock.Text>
-                        <MultiBinding StringFormat="{}{0} / {1}">
-                            <Binding Path="CurrentTest.TestAttempts.Count"/>
-                            <Binding Path="CurrentTest.MaxAttempts"/>
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-            </StackPanel>
-            <StackPanel Visibility="{Binding CurrentTest.HasTermin, Converter={StaticResource BoolToVis}}" Orientation="Horizontal">
-                <Label Content="Test.Termin"/>
-                <TextBlock Text="{Binding CurrentTest.Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}"/>
-            </StackPanel>
-            <StackPanel Visibility="{Binding CurrentTest.HasTimer, Converter={StaticResource BoolToVis}}" Orientation="Horizontal">
-                <Label Content="Test.Timer"/>
-                <TextBlock Text="{Binding CurrentTest.TimeLimit, StringFormat='{}{0:mm\\:ss}'}"/>
-            </StackPanel>
-        </StackPanel>
+            <Label Content="Деталі тесту" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"/>
+
+            <TextBlock Text="Ім'я:" Grid.Column="0" Grid.Row="1"/>
+            <TextBlock Text="{Binding CurrentTest.Name}" Grid.Column="1" Grid.Row="1"/>
+
+            <TextBlock Text="Опис:" Grid.Column="0" Grid.Row="2"/>
+            <TextBlock Text="{Binding CurrentTest.Description}" Grid.Column="1" Grid.Row="2"/>
+
+            <TextBlock Text="Спроб:" Grid.Column="0" Grid.Row="3"/>
+            <TextBlock Grid.Column="1" Grid.Row="3">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} / {1}">
+                        <Binding Path="CurrentTest.TestAttempts.Count"/>
+                        <Binding Path="CurrentTest.MaxAttempts"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
+            <TextBlock Text="Термін:" Visibility="{Binding CurrentTest.HasTermin, Converter={StaticResource BoolToVis}}" Grid.Column="0" Grid.Row="4"/>
+            <TextBlock Text="{Binding CurrentTest.Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" Visibility="{Binding CurrentTest.HasTermin, Converter={StaticResource BoolToVis}}" Grid.Column="1" Grid.Row="4"/>
+
+            <TextBlock Text="Час для проходження:" Visibility="{Binding CurrentTest.HasTimer, Converter={StaticResource BoolToVis}}" Grid.Column="0" Grid.Row="5"/>
+            <TextBlock Text="{Binding CurrentTest.TimeLimit, StringFormat='{}{0:mm\\:ss}'}" Visibility="{Binding CurrentTest.HasTimer, Converter={StaticResource BoolToVis}}" Grid.Column="1" Grid.Row="5"/>
+
+            <Button x:Name="StartButton" Visibility="Collapsed" Content="Почати" Width="75" Click="Start_Click" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Button x:Name="ContinueButton" Visibility="Collapsed" Content="Продовжити" Width="75" Click="Continue_Click" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <!--<Button Content="See Attempt Result" Width="150" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>-->
+        </Grid>
     </Grid>
 </UserControl>

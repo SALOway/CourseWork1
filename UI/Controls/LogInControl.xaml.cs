@@ -11,9 +11,11 @@ namespace UI.Controls;
 public partial class LogInControl : UserControl
 {
     private readonly Brush _borderBrush = new SolidColorBrush(Color.FromRgb(171, 173, 179));
+    private readonly MainWindow _mainWindow;
 
-    public LogInControl()
+    public LogInControl(MainWindow mainWindow)
     {
+        _mainWindow = mainWindow;
         InitializeComponent();
     }
 
@@ -29,18 +31,18 @@ public partial class LogInControl : UserControl
             return;
         }
     
-        var authResult = MainWindow.Instance.UserService.Authenticate(username, password);
+        var authResult = ServiceProvider.UserService.Authenticate(username, password);
         if (authResult.IsSuccess)
         {
             var user = authResult.Value;
-            MainWindow.CurrentUser = user;
+            AppState.CurrentUser = user;
             switch (user.Role)
             {
                 case UserRole.Teacher:
-                    MainWindow.Instance.GoTo(Menus.TeacherMenu);
+                    _mainWindow.GoTo(Menus.TeacherMenu);
                     break;
                 case UserRole.Student:
-                    MainWindow.Instance.GoTo(Menus.StudentTestBrowser);
+                    _mainWindow.GoTo(Menus.StudentTestBrowser);
                     break;
                 case UserRole.None:
                 default:

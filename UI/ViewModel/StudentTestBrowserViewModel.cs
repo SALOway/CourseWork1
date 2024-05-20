@@ -54,19 +54,19 @@ public class StudentTestBrowserViewModel : INotifyPropertyChanged
 
     private void LoadTests()
     {
-        if (MainWindow.CurrentUser == null)
+        if (AppState.CurrentUser == null)
         {
             MessageBox.Show("Current user is null");
-            throw new NullReferenceException(nameof(MainWindow.CurrentUser));
+            throw new NullReferenceException(nameof(AppState.CurrentUser));
         }
-        else if (MainWindow.CurrentUser.StudentGroup == null)
+        else if (AppState.CurrentUser.StudentGroup == null)
         {
             MessageBox.Show("User group is null");
             throw new NullReferenceException();
         }
 
-        var getTestResult = MainWindow.Instance.TestService
-            .Get(t => t.StudentGroup.Id == MainWindow.CurrentUser.StudentGroup.Id && t.Status == TestStatus.Public);
+        var getTestResult = ServiceProvider.TestService
+            .Get(t => t.StudentGroup.Id == AppState.CurrentUser.StudentGroup.Id && t.Status == TestStatus.Public);
         if (!getTestResult.IsSuccess)
         {
             MessageBox.Show(getTestResult.ErrorMessage);

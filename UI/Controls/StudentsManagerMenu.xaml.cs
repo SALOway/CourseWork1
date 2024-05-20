@@ -12,17 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UI.Windows;
 
-namespace UI.Controls
+namespace UI.Controls;
+
+public partial class StudentsManagerMenu : UserControl
 {
-    /// <summary>
-    /// Interaction logic for StudentsManagerMenu.xaml
-    /// </summary>
-    public partial class StudentsManagerMenu : UserControl
+    private readonly MainWindow _mainWindow;
+    public StudentsManagerMenu(MainWindow mainWindow)
     {
-        public StudentsManagerMenu()
-        {
-            InitializeComponent();
-        }
+        _mainWindow = mainWindow;
+        InitializeComponent();
     }
 }
