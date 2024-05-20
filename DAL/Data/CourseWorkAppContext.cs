@@ -18,6 +18,7 @@ public class CourseWorkAppContext : DbContext
     {
         var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=CourseWorkApp-1;Integrated Security=True;";
         optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.EnableSensitiveDataLogging(true);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

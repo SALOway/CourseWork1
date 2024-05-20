@@ -15,7 +15,15 @@ public class TestAttemptService(IGenericRepository<TestAttempt> testAttemptRepos
     }
     public Result<IQueryable<TestAttempt>> Get(Expression<Func<TestAttempt, bool>>? predicate = null)
     {
-        return _repository.Get(predicate);
+        var getTestAttempts = _repository.Get(predicate);
+        if (!getTestAttempts.IsSuccess)
+        {
+            return Result<IQueryable<TestAttempt>>.Failure(getTestAttempts.AppErrors);
+        }
+
+        var query = getTestAttempts.Value;
+        
+        return Result<IQueryable<TestAttempt>>.Success(query.OrderBy(a => a.CreatedAt));
     }
     public Result Update(TestAttempt testAttempt)
     {

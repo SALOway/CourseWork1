@@ -22,7 +22,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <Label Content="Username:" Grid.Row="0" Grid.Column="0" FontSize="15"/>
-                <TextBox x:Name="UsernameField" Text="" MinWidth="100" GotFocus="UsernameField_GotFocus" LostFocus="UsernameField_LostFocus" VerticalAlignment="Center" FontSize="15" Grid.Row="0" Grid.Column="1"/>
+                <TextBox x:Name="UsernameField" Text="" MaxLines="1" MinWidth="100" GotFocus="UsernameField_GotFocus" LostFocus="UsernameField_LostFocus" VerticalAlignment="Center" FontSize="15" Grid.Row="0" Grid.Column="1"/>
 
                 <Label x:Name="UsernameErrorMessage" Content="Username can't be empty" Foreground="Red" VerticalAlignment="Top" Padding="0" Grid.Row="1" Grid.Column="1" Visibility="Hidden"/>
 

@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="UI.Controls.TestDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.Controls"
+             xmlns:Windows="clr-namespace:UI.Windows"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <Windows:MainWindow/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid>
+        <Button Content="Back" Width="70" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0" Click="Back_Click"/>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Label Content="Test Details"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Test.Name"/>
+                <TextBlock Text="{Binding CurrentTest.Name}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Test.Description:"/>
+                <TextBlock Text="{Binding CurrentTest.Description}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Test.Attempts:"/>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} / {1}">
+                            <Binding Path="CurrentTest.TestAttempts.Count"/>
+                            <Binding Path="CurrentTest.MaxAttempts"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Visibility="{Binding CurrentTest.HasTermin, Converter={StaticResource BoolToVis}}" Orientation="Horizontal">
+                <Label Content="Test.Termin"/>
+                <TextBlock Text="{Binding CurrentTest.Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}"/>
+            </StackPanel>
+            <StackPanel Visibility="{Binding CurrentTest.HasTimer, Converter={StaticResource BoolToVis}}" Orientation="Horizontal">
+                <Label Content="Test.Timer"/>
+                <TextBlock Text="{Binding CurrentTest.TimeLimit, StringFormat='{}{0:mm\\:ss}'}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

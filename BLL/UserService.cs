@@ -39,7 +39,9 @@ public class UserService(IGenericRepository<User> repository) : IUserService
 
     public Result<User> Authenticate(string username, string password)
     {
-        var getUserResult = _repository.Get(u => u.Username == username && u.Password == password && u.Role != UserRole.None);
+        var getUserResult = _repository.Get(u => u.Username == username
+                                                 && u.Password == password
+                                                 && u.Role != UserRole.None);
         if (!getUserResult.IsSuccess)
         {
             return Result<User>.Failure(getUserResult.AppErrors);

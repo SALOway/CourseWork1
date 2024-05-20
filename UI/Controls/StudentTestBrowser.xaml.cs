@@ -1,28 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using UI.ViewModel;
+using UI.Windows;
 
-namespace UI.Controls
+namespace UI.Controls;
+
+public partial class StudentTestBrowser : UserControl
 {
-    /// <summary>
-    /// Interaction logic for StudentTestBrowser.xaml
-    /// </summary>
-    public partial class TestBrowser : UserControl
+    public StudentTestBrowser()
     {
-        public TestBrowser()
+        DataContext = new StudentTestBrowserViewModel();
+        InitializeComponent();
+    }
+
+    private void LogOut_Click(object sender, RoutedEventArgs e)
+    {
+        MainWindow.Instance.LogOut();
+    }
+
+    private void Search_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
         {
-            InitializeComponent();
+            ((StudentTestBrowserViewModel)DataContext).Search();
+        }
+    }
+
+    private void GoToDetails_OnClick(object sender, RoutedEventArgs e)
+    {
+        var selectedTest = ((StudentTestBrowserViewModel)DataContext).SelectedTest;
+        if (selectedTest != null)
+        {
+            MainWindow.CurrentTest = selectedTest.Test;
+            MainWindow.Instance.GoTo(Enums.Menus.TestDetails);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using BLL;
-using BLL.Interfaces;
-using Core.Enums;
+﻿using Core.Enums;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,14 +10,10 @@ namespace UI.Controls;
 
 public partial class LogInControl : UserControl
 {
-    private readonly IUserService _userService;
-    private readonly MainWindow _mainWindow;
     private readonly Brush _borderBrush = new SolidColorBrush(Color.FromRgb(171, 173, 179));
 
-    public LogInControl(MainWindow mainWindow, IUserService userService)
+    public LogInControl()
     {
-        _userService = userService;
-        _mainWindow = mainWindow;
         InitializeComponent();
     }
 
@@ -35,18 +29,18 @@ public partial class LogInControl : UserControl
             return;
         }
     
-        var authResult = _userService.Authenticate(username, password);
+        var authResult = MainWindow.Instance.UserService.Authenticate(username, password);
         if (authResult.IsSuccess)
         {
             var user = authResult.Value;
-            _mainWindow.CurrentUser = user;
+            MainWindow.CurrentUser = user;
             switch (user.Role)
             {
                 case UserRole.Teacher:
-                    _mainWindow.GoTo(Menus.TeacherMenu);
+                    MainWindow.Instance.GoTo(Menus.TeacherMenu);
                     break;
                 case UserRole.Student:
-                    _mainWindow.GoTo(Menus.TestBrowser);
+                    MainWindow.Instance.GoTo(Menus.StudentTestBrowser);
                     break;
                 case UserRole.None:
                 default:

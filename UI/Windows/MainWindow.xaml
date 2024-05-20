@@ -8,6 +8,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid x:Name="Main">
-        <ContentControl x:Name="ContentControl" Content="PLACEHOLDER" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <ContentControl x:Name="ContentControl" Content="PLACEHOLDER" KeyboardNavigation.IsTabStop="False"/>
     </Grid>
 </Window>
