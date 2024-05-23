@@ -1,12 +1,15 @@
-﻿using Core.Models;
-using System.Windows;
-using System.Windows.Controls;
-using UI.Enums;
+﻿using System.Windows.Controls;
+using UI.ViewModels;
 
-namespace UI.Controls;
+namespace UI.Views;
 
-public partial class TestDetails : UserControl
+public partial class TestDetailsView : UserControl
 {
+    public TestDetailsView()
+    {
+        DataContext = new TestDetailsViewModel();
+        InitializeComponent();
+    }
     //private readonly MainWindow _mainWindow;
     //private readonly TestAttempt _testAttemptToContinue;
 

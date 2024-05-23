@@ -5,8 +5,8 @@ namespace Core.Models;
 
 public class TestAttempt : BaseEntity
 {
-    public DateTime StartedAt { get; set; }
-    public DateTime EndedAt { get; set; }
+    public DateTime StartedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? EndedAt { get; set; }
     [EnumDataType(typeof(TestAttemptStatus))]
     public TestAttemptStatus Status { get; set; } = TestAttemptStatus.InProcess;
 

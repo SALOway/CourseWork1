@@ -5,9 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UI.Views" 
              xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:StudentTestBrowserViewModel}"
+             xmlns:converters="clr-namespace:UI.Convertors"
              mc:Ignorable="d" Height="603" Width="1072">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:AttemptStatusToStringConverter x:Key="AttStatToStr"/>
     </UserControl.Resources>
     
     <Grid VerticalAlignment="Top">
@@ -38,7 +40,7 @@
                         <GridViewColumn Header="Назва тесту" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Test.Name}" FontSize="24" 
+                                    <TextBlock Text="{Binding Model.Name}" FontSize="24" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -56,9 +58,9 @@
                         <GridViewColumn Header="Строк" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Test.Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" 
+                                    <TextBlock Text="{Binding Model.Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                               Visibility="{Binding Test.HasTermin, Converter={StaticResource BoolToVis}}"/>
+                                               Visibility="{Binding Model.HasTermin, Converter={StaticResource BoolToVis}}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -66,7 +68,7 @@
                         <GridViewColumn Header="Статус останньої спроби" Width="300">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding LastAttemptStatus}"
+                                    <TextBlock Text="{Binding LastAttemptStatus, Converter={StaticResource AttStatToStr}}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

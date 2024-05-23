@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="UI.Views.TestDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.Views" 
+             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestDetailsViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Amount of questions"/>
+                <TextBlock Text="{Binding Test.QuestionsCount}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Amount of answered questions"/>
+                <TextBlock Text="{Binding LastTestAttempt.AmountOfAnsweredQuestions, FallbackValue='NULL'}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Max grade"/>
+                <TextBlock Text="{Binding Test.MaxGrade}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Required grade"/>
+                <TextBlock Text="{Binding Test.Model.RequiredGrade}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Time to complete"/>
+                <TextBlock Text="{Binding Test.Model.TimeLimit}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Leftover time"/>
+                <TextBlock Text="{Binding LastTestAttempt.LeftoverTime, FallbackValue='NULL'}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Termin"/>
+                <TextBlock Text="{Binding Test.Model.Termin}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Started at"/>
+                <TextBlock Text="{Binding LastTestAttempt.Model.StartedAt, FallbackValue='NULL'}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Ended at"/>
+                <TextBlock Text="{Binding LastTestAttempt.Model.EndedAt, FallbackValue='NULL'}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

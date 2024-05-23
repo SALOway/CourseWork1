@@ -33,4 +33,23 @@ public class TestAttemptService(IGenericRepository<TestAttempt> testAttemptRepos
     {
         return _repository.Remove(predicate);
     }
+
+    public Result<TestAttempt?> GetLastAttempt(User user, Test test)
+    {
+        var getAttempts = Get(a => a.Test.Id == test.Id && a.User.Id == user.Id);
+        if (!getAttempts.IsSuccess)
+        {
+            return Result<TestAttempt?>.Failure(getAttempts.AppErrors);
+        }
+
+        var query = getAttempts.Value;
+        if (!query.Any())
+        {
+            return Result<TestAttempt?>.Success(null);
+        }
+
+        var lastAttempt = query.OrderByDescending(a => a.StartedAt).First();
+
+        return Result<TestAttempt?>.Success(lastAttempt);
+    }
 }

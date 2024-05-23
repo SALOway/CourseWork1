@@ -35,7 +35,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         }
         else
         {
-            FilteredTests = new ObservableCollection<ObservableTest>(Tests.Where(t => t.Test.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
+            FilteredTests = new ObservableCollection<ObservableTest>(Tests.Where(t => t.Model.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
         }
     }
 
@@ -49,10 +49,16 @@ public partial class StudentTestBrowserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static void OpenDetails()
+    private void OpenDetails()
     {
+        if (SelectedTest == null)
+        {
+            return;
+        }
+
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
+        context.CurrentTest = SelectedTest.Model;
         context.CurrentState = AppState.TestDetails;
     }
 
@@ -60,7 +66,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
     {
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-        context.CurrentTest = value?.Test;
+        context.CurrentTest = value?.Model;
     }
 
     private void LoadTests()

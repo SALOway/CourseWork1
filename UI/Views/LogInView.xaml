@@ -35,21 +35,23 @@
             <TextBox Text="{Binding Username}" MaxLines="1" FontSize="24"
                      MinWidth="150"
                      VerticalAlignment="Bottom"
-                     Grid.Row="1" Grid.Column="1"/>
+                     Grid.Row="1" Grid.Column="1" 
+                     TabIndex="0"/>
 
             <Label Content="Password:" FontSize="24"
                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
                    Grid.Row="2" Grid.Column="0"/>
-            <TextBox Text="{Binding Password}" FontSize="24" 
+            <TextBox Text="{Binding Password}" MaxLines="1" FontSize="24" 
                      MinWidth="150" 
                      VerticalAlignment="Bottom"
-                     Grid.Row="2" Grid.Column="1"/>
+                     Grid.Row="2" Grid.Column="1" 
+                     TabIndex="1"/>
 
             <Button Content="Log In" FontSize="24" Command="{Binding LogInCommand}"
                     MinWidth="125"
                     VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0" Padding="15,3,15,3" 
                     Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
-                    ScrollViewer.CanContentScroll="True"/>
+                    TabIndex="2"/>
         </Grid>
     </Border>
 </UserControl>

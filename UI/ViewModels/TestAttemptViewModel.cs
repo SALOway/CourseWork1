@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 
 namespace UI.ViewModels;
 
-public class TestAttemptViewModel : INotifyPropertyChanged
+public partial class TestAttemptViewModel : ObservableObject
 {
     //private ObservableCollection<QuestionViewModel> _questions;
     //private QuestionViewModel? _currentQuestion;
@@ -28,11 +28,4 @@ public class TestAttemptViewModel : INotifyPropertyChanged
     //}
 
     //public int CurrentQuestionNumber => _questions.IndexOf(_currentQuestion) + 1;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    //protected void OnPropertyChanged(string propertyName)
-    //{
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    //}
 }

@@ -5,8 +5,9 @@ namespace BLL.Interfaces;
 
 public interface ITestAttemptService
 {
-    public Result Add(TestAttempt testAttempt);
-    public Result<IQueryable<TestAttempt>> Get(Expression<Func<TestAttempt, bool>>? predicate = null);
-    public Result Update(TestAttempt testAttempt);
-    public Result Remove(Expression<Func<TestAttempt, bool>> predicate);
+    Result Add(TestAttempt testAttempt);
+    Result<IQueryable<TestAttempt>> Get(Expression<Func<TestAttempt, bool>>? predicate = null);
+    Result Update(TestAttempt testAttempt);
+    Result Remove(Expression<Func<TestAttempt, bool>> predicate);
+    Result<TestAttempt?> GetLastAttempt(User user, Test test);
 }

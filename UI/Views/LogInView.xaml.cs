@@ -1,8 +1,4 @@
-﻿using Core.Enums;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using UI.Enums;
+﻿using System.Windows.Controls;
 using UI.ViewModels;
 
 

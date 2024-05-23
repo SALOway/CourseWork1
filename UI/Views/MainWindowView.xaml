@@ -17,14 +17,23 @@
             <local:LogInView/>
         </DataTemplate>
         <DataTemplate x:Key="TestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
-            <local:StudentTestBrowserView/>
+            <local:StudentTestBrowserView 
+                IsTabStop="False"/>
+        </DataTemplate>
+        <DataTemplate x:Key="TestDetailsTemplate" DataType="{x:Type local:TestDetailsView}">
+            <local:TestDetailsView 
+        IsTabStop="False"/>
         </DataTemplate>
         <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
                                             LogInTemplate="{StaticResource LogInTemplate}"
-                                            TestBrowserTemplate="{StaticResource TestBrowserTemplate}"/>
+                                            TestBrowserTemplate="{StaticResource TestBrowserTemplate}"
+                                            TestDetailsTemplate="{StaticResource TestDetailsTemplate}"/>
         <!-- Add more DataTemplates for other states -->
     </Window.Resources>
     <Grid>
-        <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" ContentTemplateSelector="{StaticResource AppStateTemplateSelector}"/>
+        <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" 
+                        ContentTemplateSelector="{StaticResource AppStateTemplateSelector}" 
+                        IsTabStop="False"
+                        />
     </Grid>
 </Window>

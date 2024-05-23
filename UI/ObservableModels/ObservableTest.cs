@@ -10,56 +10,50 @@ public partial class ObservableTest : ObservableObject
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AttemptsRatio))]
-    private Test _test;
+    private Test _model;
 
     [ObservableProperty]
-    private string _lastAttemptStatus;
+    private TestAttemptStatus? _lastAttemptStatus;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AttemptsRatio))]
-    private string _attemptCount;
+    private int _attemptCount;
+
+    [ObservableProperty]
+    private int _maxGrade;
+
+    [ObservableProperty]
+    private int _questionsCount;
 
     public ObservableTest(Test test)
     {
-        Test = test;
-
+        Model = test;
+        QuestionsCount = Model.Questions.Count;
         LastAttemptStatus = GetLastAttemptStatus();
         AttemptCount = GetAttemptCount();
+        MaxGrade = Model.Questions.Sum(q => q.GradeValue);
     }
 
-    public string AttemptsRatio => $"{AttemptCount} з {Test.MaxAttempts}";
+    public string AttemptsRatio => $"{AttemptCount} з {Model.MaxAttempts}";
 
-    private string GetAttemptCount()
+    private int GetAttemptCount()
     {
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
         var currentUser = context.CurrentUser;
 
-        var userTestAttempts = Test.TestAttempts.Where(a => a.User.Id == currentUser!.Id);
+        var userTestAttempts = Model.TestAttempts.Where(a => a.User.Id == currentUser!.Id);
 
-        return userTestAttempts.Count().ToString();
+        return userTestAttempts.Count();
     }
 
-    private string GetLastAttemptStatus()
+    private TestAttemptStatus? GetLastAttemptStatus()
     {
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
         var currentUser = context.CurrentUser;
 
-        var userTestAttempts = Test.TestAttempts.Where(a => a.User.Id == currentUser!.Id);
+        var userTestAttempts = Model.TestAttempts.Where(a => a.User.Id == currentUser!.Id);
         var lastAttempt = userTestAttempts.OrderByDescending(attempt => attempt.StartedAt).FirstOrDefault();
 
-        if (lastAttempt == null)
-        {
-            return "-";
-        }
-
-        return lastAttempt.Status switch
-        {
-            TestAttemptStatus.InProcess => "В процесі",
-            TestAttemptStatus.Completed => "Завершено",
-            TestAttemptStatus.Expired => "Прострочено",
-            TestAttemptStatus.Failed => "Провалено",
-            TestAttemptStatus.Cancelled => "Відменено",
-            _ => throw new NotImplementedException(),
-        };
+        return lastAttempt?.Status;
     }
 }

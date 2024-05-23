@@ -16,6 +16,10 @@ public class Test : BaseEntity
     [Range(1, int.MaxValue)]
     public int MaxAttempts { get; set; } = 1;
 
+    public bool HasRequiredGrade { get; set; }
+    [Range(1, int.MaxValue)]
+    public int? RequiredGrade { get; set; }
+
     public bool HasTermin { get; set; } = false;
     public DateTime? Termin { get; set; }
 
