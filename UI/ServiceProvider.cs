@@ -16,6 +16,7 @@ public class ServiceProvider
     public static readonly IUserAnswerService UserAnswerService;
     public static readonly IUserService UserService;
 
+    // provokes freeze at the begining since doesn't created until accessed first time
     static ServiceProvider()
     {
         var context = new CourseWorkAppContext();
@@ -31,4 +32,9 @@ public class ServiceProvider
     }
 
     private ServiceProvider() { }
+
+    public static void StupidFunction()
+    {
+        // AHAHAHAHAHAHAHAH
+    }
 }

@@ -3,18 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:UI.Controls"
-             xmlns:Windows="clr-namespace:UI.Windows"
+             xmlns:local="clr-namespace:UI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
+    <!--<UserControl.DataContext>
         <Windows:MainWindow/>
     </UserControl.DataContext>
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     <Grid>
-        <Button Content="Back" Width="70" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0" Click="Back_Click"/>
+        <!--<Button Content="Back" Width="70" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0" Click="Back_Click"/>
         <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="75"/>
@@ -57,7 +56,7 @@
 
             <Button x:Name="StartButton" Visibility="Collapsed" Content="Почати" Width="75" Click="Start_Click" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <Button x:Name="ContinueButton" Visibility="Collapsed" Content="Продовжити" Width="75" Click="Continue_Click" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <!--<Button Content="See Attempt Result" Width="150" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>-->
-        </Grid>
+            --><!--<Button Content="See Attempt Result" Width="150" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>--><!--
+        </Grid>-->
     </Grid>
 </UserControl>

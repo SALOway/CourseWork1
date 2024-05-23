@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UI.Controls;
+namespace UI.Views;
 
 public partial class QuestionControl : UserControl
 {

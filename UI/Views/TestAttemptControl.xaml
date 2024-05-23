@@ -3,15 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:UI.Controls" xmlns:viewmodel="clr-namespace:UI.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:TestAttemptViewModel}"
-             xmlns:convertors="clr-namespace:UI.Convertors"
+             xmlns:local="clr-namespace:UI.Views" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
+    <!--<UserControl.Resources>
         <convertors:IndexConverter x:Key="iToNum"/>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
@@ -23,7 +22,7 @@
             <Border Margin="0,0,0,10" Padding="0,5,5,5" Grid.Row="0" BorderBrush="#FF585858" BorderThickness="0,0,0,1">
                 <Label Content="{Binding CurrentQuestionNumber, StringFormat='{}Питання #{0}'}" FontSize="30"/>
             </Border>
-            <local:QuestionControl x:Name="QuestionView" KeyboardNavigation.IsTabStop="False" Grid.Row="1"/>
+            --><!--<local:QuestionControl x:Name="QuestionView" KeyboardNavigation.IsTabStop="False" Grid.Row="1"/>--><!--
         </Grid>
         <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1,0,0,0">
             <ListView ItemsSource="{Binding Questions}" HorizontalContentAlignment="Stretch">
@@ -40,6 +39,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Border>
+        </Border>-->
     </Grid>
 </UserControl>

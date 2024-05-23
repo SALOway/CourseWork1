@@ -1,10 +1,10 @@
 ﻿namespace UI.Enums;
 
-public enum Menus
+public enum AppState
 {
     LogIn = 0,
     StudentManager = 1,
-    StudentTestBrowser = 2,
+    TestBrowser = 2,
     TeacherMenu = 3,
     TestDetails = 4,
     TestAttempt = 5,

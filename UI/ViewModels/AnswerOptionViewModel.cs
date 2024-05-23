@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UI.ViewModel;
+namespace UI.ViewModels;
 
 public class AnswerOptionViewModel(AnswerOption answerOption, bool isChecked = false) : INotifyPropertyChanged
 {

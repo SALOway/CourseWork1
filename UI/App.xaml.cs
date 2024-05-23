@@ -1,10 +1,12 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 
-namespace UI
+namespace UI;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    protected override void OnStartup(StartupEventArgs e)
     {
+        ServiceProvider.StupidFunction();
+        base.OnStartup(e);
     }
 }

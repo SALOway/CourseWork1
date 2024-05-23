@@ -12,19 +12,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UI.ViewModel;
 
 namespace UI.Controls;
 
 public partial class TestAttemptControl : UserControl
 {
-    private readonly TestAttemptViewModel _testAttemptViewModel;
+    //private readonly TestAttemptViewModel _testAttemptViewModel;
 
-    public TestAttemptControl()
-    {
-        _testAttemptViewModel = new TestAttemptViewModel();
-        DataContext = _testAttemptViewModel;
-        InitializeComponent();
-        QuestionView.DataContext = _testAttemptViewModel.CurrentQuestion;
-    }
+    //public TestAttemptControl()
+    //{
+    //    _testAttemptViewModel = new TestAttemptViewModel();
+    //    DataContext = _testAttemptViewModel;
+    //    InitializeComponent();
+    //    QuestionView.DataContext = _testAttemptViewModel.CurrentQuestion;
+    //}
 }

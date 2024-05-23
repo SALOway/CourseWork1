@@ -1,0 +1,30 @@
+﻿<Window x:Class="UI.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UI.Views" 
+        xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+        xmlns:selectors="clr-namespace:UI.Selectors"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        WindowState="Maximized">
+    <Window.DataContext>
+        <viewmodels:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate x:Key="LogInTemplate" DataType="{x:Type local:LogInView}">
+            <local:LogInView/>
+        </DataTemplate>
+        <DataTemplate x:Key="TestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
+            <local:StudentTestBrowserView/>
+        </DataTemplate>
+        <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
+                                            LogInTemplate="{StaticResource LogInTemplate}"
+                                            TestBrowserTemplate="{StaticResource TestBrowserTemplate}"/>
+        <!-- Add more DataTemplates for other states -->
+    </Window.Resources>
+    <Grid>
+        <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" ContentTemplateSelector="{StaticResource AppStateTemplateSelector}"/>
+    </Grid>
+</Window>
