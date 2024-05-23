@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using UI.Commands;
-using UI.Windows;
 
 namespace UI.ViewModel;
 
@@ -16,8 +15,6 @@ public class StudentTestBrowserViewModel : INotifyPropertyChanged
     private ObservableCollection<TestViewModel> _filteredTests = [];
     private string _searchText = string.Empty;
     private TestViewModel? _selectedTest;
-
-    public int MyProperty { get; set; } = 5;
 
     public StudentTestBrowserViewModel()
     {
@@ -54,17 +51,6 @@ public class StudentTestBrowserViewModel : INotifyPropertyChanged
 
     private void LoadTests()
     {
-        if (AppState.CurrentUser == null)
-        {
-            MessageBox.Show("Current user is null");
-            throw new NullReferenceException(nameof(AppState.CurrentUser));
-        }
-        else if (AppState.CurrentUser.StudentGroup == null)
-        {
-            MessageBox.Show("User group is null");
-            throw new NullReferenceException();
-        }
-
         var getTestResult = ServiceProvider.TestService
             .Get(t => t.StudentGroup.Id == AppState.CurrentUser.StudentGroup.Id && t.Status == TestStatus.Public);
         if (!getTestResult.IsSuccess)

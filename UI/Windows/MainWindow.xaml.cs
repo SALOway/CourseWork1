@@ -26,6 +26,7 @@ public partial class MainWindow : Window
             Menus.StudentTestBrowser => new StudentTestBrowser(this),
             Menus.TeacherMenu => new TeacherMenu(this),
             Menus.TestDetails => new TestDetails(this),
+            Menus.TestAttempt => new TestAttemptControl(),
             _ => throw new NotImplementedException(),
         };
     }

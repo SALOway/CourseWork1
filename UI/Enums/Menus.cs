@@ -7,4 +7,5 @@ public enum Menus
     StudentTestBrowser = 2,
     TeacherMenu = 3,
     TestDetails = 4,
+    TestAttempt = 5,
 }

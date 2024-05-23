@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Core.Models;
+using System.Windows;
 using System.Windows.Controls;
 using UI.Enums;
 using UI.Windows;
@@ -8,6 +9,7 @@ namespace UI.Controls;
 public partial class TestDetails : UserControl
 {
     private readonly MainWindow _mainWindow;
+    private readonly TestAttempt _testAttemptToContinue;
 
     public TestDetails(MainWindow mainWindow)
     {
@@ -23,15 +25,18 @@ public partial class TestDetails : UserControl
 
         if (!currentUserAttempts.Any())
         {
+            ContinueButton.Visibility = Visibility.Collapsed;
             StartButton.Visibility = Visibility.Visible;
             return;
         }
 
-        var lastAttemptStatus = currentUserAttempts.OrderByDescending(a => a.StartedAt).First();
+        var lastAttempt = currentUserAttempts.OrderByDescending(a => a.StartedAt).First();
 
-        if (lastAttemptStatus.Status == Core.Enums.TestAttemptStatus.InProcess)
+        if (lastAttempt.Status == Core.Enums.TestAttemptStatus.InProcess)
         {
+            StartButton.Visibility = Visibility.Collapsed;
             ContinueButton.Visibility = Visibility.Visible;
+            _testAttemptToContinue = lastAttempt;
             return;
         }
 
@@ -52,11 +57,23 @@ public partial class TestDetails : UserControl
 
     private void Start_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("А дзуськи тобі");
+        var newAttempt = new TestAttempt()
+        {
+            User = AppState.CurrentUser,
+            Test = AppState.CurrentTest,
+        };
+        var createNewAttempt = ServiceProvider.TestAttemptService.Add(newAttempt);
+        if (!createNewAttempt.IsSuccess)
+        {
+            MessageBox.Show(createNewAttempt.ErrorMessage);
+        }
+        AppState.CurrentTestAttempt = newAttempt;
+        _mainWindow.GoTo(Menus.TestAttempt);
     }
 
     private void Continue_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("А дзуськи тобі");
+        AppState.CurrentTestAttempt = _testAttemptToContinue;
+        _mainWindow.GoTo(Menus.TestAttempt);
     }
 }
