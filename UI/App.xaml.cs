@@ -6,7 +6,7 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
-        ServiceProvider.StupidFunction();
+        ServiceProvider.Init();
         base.OnStartup(e);
     }
 }

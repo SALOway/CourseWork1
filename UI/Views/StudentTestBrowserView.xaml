@@ -13,26 +13,29 @@
     </UserControl.Resources>
     
     <Grid VerticalAlignment="Top">
-        <Button Content="Log Out" Command="{Binding LogOutCommand}" FontSize="24"
-                Width="125"
+        <Button Content="Вйти з аккаунту" Command="{Binding LogOutCommand}" FontSize="24"
+                Width="200"
                 HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="5"/>
         
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
+                <!--Пошукова строка-->
                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" FontSize="24"
                          MinWidth="250" Margin="0,0,5,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
                     </TextBox.InputBindings>
                 </TextBox>
+                <!--Кнопка пошуку-->
                 <Button Content="Пошук" Command="{Binding SearchCommand}" FontSize="24" 
                         Width="100" Margin="0,0,5,0" Padding="5"/>
+                <!--Кнопка відкриття деталей-->
                 <Button Content="Відкрити деталі" Command="{Binding OpenDetailsCommand}" FontSize="24"
                         Width="200" Padding="5"/>
             </StackPanel>
 
+            <!--Список відфільтррованих тестів-->
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
-                      
                       HorizontalContentAlignment="Stretch" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ListView.View>
                     <GridView>

@@ -13,27 +13,35 @@
         <viewmodels:MainWindowViewModel/>
     </Window.DataContext>
     <Window.Resources>
+        <!--View Templates-->
+        <!--Вхід в систему-->
         <DataTemplate x:Key="LogInTemplate" DataType="{x:Type local:LogInView}">
-            <local:LogInView/>
+            <local:LogInView IsTabStop="False"/>
         </DataTemplate>
+        <!--Браузер тестів-->
         <DataTemplate x:Key="TestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
-            <local:StudentTestBrowserView 
-                IsTabStop="False"/>
+            <local:StudentTestBrowserView IsTabStop="False"/>
         </DataTemplate>
+        <!--Деталі тесту-->
         <DataTemplate x:Key="TestDetailsTemplate" DataType="{x:Type local:TestDetailsView}">
-            <local:TestDetailsView 
-        IsTabStop="False"/>
+            <local:TestDetailsView IsTabStop="False"/>
         </DataTemplate>
+        <!--Проходження тесту-->
+        <DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
+            <local:TestAttemptView IsTabStop="False"/>
+        </DataTemplate>
+
+        <!--Selectors-->
         <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
                                             LogInTemplate="{StaticResource LogInTemplate}"
                                             TestBrowserTemplate="{StaticResource TestBrowserTemplate}"
-                                            TestDetailsTemplate="{StaticResource TestDetailsTemplate}"/>
-        <!-- Add more DataTemplates for other states -->
+                                            TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
+                                            TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"/>
+                                            
     </Window.Resources>
     <Grid>
         <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" 
                         ContentTemplateSelector="{StaticResource AppStateTemplateSelector}" 
-                        IsTabStop="False"
-                        />
+                        IsTabStop="False"/>
     </Grid>
 </Window>

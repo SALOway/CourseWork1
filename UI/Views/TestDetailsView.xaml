@@ -11,51 +11,60 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
     <Grid>
+        <!--Кнопка назад-->
+        <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="0,0,0,10"
+                Grid.Row="0"/>
+        
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Amount of questions"/>
-                <TextBlock Text="{Binding Test.QuestionsCount}"/>
-            </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Amount of answered questions"/>
-                <TextBlock Text="{Binding LastTestAttempt.AmountOfAnsweredQuestions, FallbackValue='NULL'}"/>
-            </StackPanel>
+            <Label Content="{Binding Test.QuestionsCount, FallbackValue='NULL'}"
+                   ContentStringFormat="Кількість питань: {0}"
+                   FontSize="24"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Max grade"/>
-                <TextBlock Text="{Binding Test.MaxGrade}"/>
-            </StackPanel>
+            <Label Content="{Binding LastTestAttempt.AmountOfAnsweredQuestions, FallbackValue='NULL'}"
+                   ContentStringFormat="Прохідний бал: {0}"
+                   FontSize="24"
+                   Visibility="{Binding HasLastTestAttempt, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Required grade"/>
-                <TextBlock Text="{Binding Test.Model.RequiredGrade}"/>
-            </StackPanel>
+            <Label Content="{Binding Test.MaxGrade, FallbackValue='NULL'}"
+                   ContentStringFormat="Кількість наданих відповідей: {0}"
+                   FontSize="24"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Time to complete"/>
-                <TextBlock Text="{Binding Test.Model.TimeLimit}"/>
-            </StackPanel>
+            <Label Content="{Binding Test.Model.RequiredGrade, FallbackValue='NULL'}"
+                   ContentStringFormat="Прохідний бал: {0}"
+                   FontSize="24"
+                   Visibility="{Binding Test.Model.HasRequiredGrade, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Leftover time"/>
-                <TextBlock Text="{Binding LastTestAttempt.LeftoverTime, FallbackValue='NULL'}"/>
-            </StackPanel>
+            <Label Content="{Binding Test.Model.TimeLimit, FallbackValue='NULL'}"
+                   ContentStringFormat="Час на проходження: {0}"
+                   FontSize="24"
+                   Visibility="{Binding Test.Model.HasTimer, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
+            
+            <Label Content="{Binding LastTestAttempt.Model.LeftoverTime, FallbackValue='NULL'}"
+                   ContentStringFormat="Залишковий час після проходження: {0}"
+                   FontSize="24"
+                   Visibility="{Binding LastTestAttempt.Model.HasLeftoverTime, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Termin"/>
-                <TextBlock Text="{Binding Test.Model.Termin}"/>
-            </StackPanel>
+            <Label Content="{Binding Test.TerminLocal, FallbackValue='NULL'}"
+                   ContentStringFormat="Закривається о {0:HH:mm:ss dd.MM.yyyy}"
+                   FontSize="24"
+                   Visibility="{Binding Test.Model.HasTermin, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Started at"/>
-                <TextBlock Text="{Binding LastTestAttempt.Model.StartedAt, FallbackValue='NULL'}"/>
-            </StackPanel>
+            <Label Content="{Binding LastTestAttempt.StartedAtLocal, FallbackValue='NULL'}"
+                   ContentStringFormat="Почато о {0:HH:mm:ss dd.MM.yyyy}"
+                   FontSize="24"
+                   Visibility="{Binding HasLastTestAttempt, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Ended at"/>
-                <TextBlock Text="{Binding LastTestAttempt.Model.EndedAt, FallbackValue='NULL'}"/>
-            </StackPanel>
+            <Label Content="{Binding LastTestAttempt.EndedAtLocal, FallbackValue='NULL'}"
+                   ContentStringFormat="Завершено о {0:HH:mm:ss dd.MM.yyyy}"
+                   FontSize="24"
+                   Visibility="{Binding LastTestAttempt.WasEnded, FallbackValue=False, Converter={StaticResource BoolToVis}}"/>
+
+            <Button Content="Почати" FontSize="24" Command="{Binding StartNewAttemptCommand}" 
+                    Visibility="{Binding CanStart, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Продовжити" FontSize="24" Command="{Binding ContinueLastAttemptCommand}" 
+                    Visibility="{Binding CanContinue, Converter={StaticResource BoolToVis}}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -35,6 +35,7 @@ public partial class ObservableTest : ObservableObject
     }
 
     public string AttemptsRatio => $"{AttemptCount} з {Model.MaxAttempts}";
+    public DateTime? TerminLocal => Model.Termin?.ToLocalTime();
 
     private int GetAttemptCount()
     {

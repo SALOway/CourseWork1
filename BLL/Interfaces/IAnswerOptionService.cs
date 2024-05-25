@@ -5,8 +5,9 @@ namespace BLL.Interfaces;
 
 public interface IAnswerOptionService
 {
-    public Result Add(AnswerOption answerOption);
-    public Result<IQueryable<AnswerOption>> Get(Expression<Func<AnswerOption, bool>>? predicate = null);
-    public Result Update(AnswerOption answerOption);
-    public Result Remove(Expression<Func<AnswerOption, bool>> predicate);
+    Result Add(AnswerOption answerOption);
+    Result<IQueryable<AnswerOption>> Get(Expression<Func<AnswerOption, bool>>? predicate = null);
+    Result Update(AnswerOption answerOption);
+    Result Remove(Expression<Func<AnswerOption, bool>> predicate);
+    Result<IQueryable<AnswerOption>> GetAllOptionsForQuestion(Question question);
 }

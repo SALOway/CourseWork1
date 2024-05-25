@@ -33,7 +33,7 @@ public class ServiceProvider
 
     private ServiceProvider() { }
 
-    public static void StupidFunction()
+    public static void Init()
     {
         // AHAHAHAHAHAHAHAH
     }
