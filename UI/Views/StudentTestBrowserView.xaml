@@ -6,17 +6,18 @@
              xmlns:local="clr-namespace:UI.Views" 
              xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:StudentTestBrowserViewModel}"
              xmlns:converters="clr-namespace:UI.Convertors"
-             mc:Ignorable="d" Height="603" Width="1072">
+             mc:Ignorable="d" 
+             d:DesignHeight="640" d:DesignWidth="1280">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <converters:AttemptStatusToStringConverter x:Key="AttStatToStr"/>
     </UserControl.Resources>
     
-    <Grid VerticalAlignment="Top">
+    <Grid>
+        <!--Кнопка виходу з аккаунту-->
         <Button Content="Вйти з аккаунту" Command="{Binding LogOutCommand}" FontSize="24"
-                Width="200"
-                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="5"/>
-        
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>
+
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
                 <!--Пошукова строка-->
@@ -28,15 +29,16 @@
                 </TextBox>
                 <!--Кнопка пошуку-->
                 <Button Content="Пошук" Command="{Binding SearchCommand}" FontSize="24" 
-                        Width="100" Margin="0,0,5,0" Padding="5"/>
+                        Margin="0,0,5,0" Padding="25,5,25,5"/>
                 <!--Кнопка відкриття деталей-->
                 <Button Content="Відкрити деталі" Command="{Binding OpenDetailsCommand}" FontSize="24"
-                        Width="200" Padding="5"/>
+                        Padding="25,5,25,5"/>
             </StackPanel>
 
             <!--Список відфільтррованих тестів-->
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
-                      HorizontalContentAlignment="Stretch" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+                      FontSize="24"
+                      HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <ListView.View>
                     <GridView>
                         <!--Назва тесту-->

@@ -63,7 +63,7 @@
                 <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" Margin="25">
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -78,22 +78,22 @@
                         Grid.Row="0"/>
 
                 <Label Content="{Binding SelectedQuestionNumber}" ContentStringFormat="Питання #{0}"  FontSize="24"
-                       HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                       HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,10,0"
                        Grid.Row="1"/>
                 <Label Content="{Binding Timeout}" ContentStringFormat="Залишилось часу: {0:hh\:mm\:ss}" FontSize="24"
-                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,0,10,0"
                        Grid.Row="1"
                        Visibility="{Binding HasTimer, Converter={StaticResource BoolToVis}}"/>
 
                 <Border Grid.Row="2" Padding="25">
-                    <Label Content="{Binding SelectedQuestion.Model.Content}" FontSize="24"
-                           VerticalAlignment="Top"/>
+                    <TextBlock Text="{Binding SelectedQuestion.Model.Content}" FontSize="24" TextWrapping="Wrap"
+                               VerticalAlignment="Top" Margin="10,0,10,0"/>
                 </Border>
                 
                 <!--Список з варіантів відповіді-->
                 <ItemsControl ItemsSource="{Binding SelectedQuestion.AnswerOptions}"
                               ItemTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
-                              VerticalAlignment="Top"
+                              VerticalAlignment="Top" Margin="10,0,10,0"
                               Grid.Row="3"/>
                 
                 <!--Кнопки перемикання питання-->

@@ -18,8 +18,8 @@
         <DataTemplate x:Key="LogInTemplate" DataType="{x:Type local:LogInView}">
             <local:LogInView IsTabStop="False"/>
         </DataTemplate>
-        <!--Браузер тестів-->
-        <DataTemplate x:Key="TestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
+        <!--Браузер тестів студента-->
+        <DataTemplate x:Key="StudentTestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
             <local:StudentTestBrowserView IsTabStop="False"/>
         </DataTemplate>
         <!--Деталі тесту-->
@@ -30,13 +30,23 @@
         <DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
             <local:TestAttemptView IsTabStop="False"/>
         </DataTemplate>
+        <!--Меню вчителя-->
+        <DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
+            <local:TeacherMenuView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Браузер тестів вчителя-->
+        <DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
+            <local:TeacherTestBrowserView IsTabStop="False"/>
+        </DataTemplate>
 
         <!--Selectors-->
         <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
                                             LogInTemplate="{StaticResource LogInTemplate}"
-                                            TestBrowserTemplate="{StaticResource TestBrowserTemplate}"
+                                            StudentTestBrowserTemplate="{StaticResource StudentTestBrowserTemplate}"
                                             TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
-                                            TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"/>
+                                            TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
+                                            TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
+                                            TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"/>
                                             
     </Window.Resources>
     <Grid>

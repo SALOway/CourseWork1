@@ -8,9 +8,11 @@ public class AppStateTemplateSelector : DataTemplateSelector
 {
     public DataTemplate? Placeholder { get; set; }
     public DataTemplate? LogInTemplate { get; set; }
-    public DataTemplate? TestBrowserTemplate { get; set; }
+    public DataTemplate? StudentTestBrowserTemplate { get; set; }
     public DataTemplate? TestDetailsTemplate { get; set; }
     public DataTemplate? TestAttemptsTemplate { get; set; }
+    public DataTemplate? TeacherMenuTemplate { get; set; }
+    public DataTemplate? TeacherTestBrowserTemplate { get; set; }
 
     public override DataTemplate? SelectTemplate(object item, DependencyObject container)
     {
@@ -18,9 +20,11 @@ public class AppStateTemplateSelector : DataTemplateSelector
         return appState switch
         {
             AppState.LogIn => LogInTemplate,
-            AppState.TestBrowser => TestBrowserTemplate,
+            AppState.StudentTestBrowser => StudentTestBrowserTemplate,
             AppState.TestDetails => TestDetailsTemplate,
             AppState.TestAttempt => TestAttemptsTemplate,
+            AppState.TeacherMenu => TeacherMenuTemplate,
+            AppState.TeacherTestBrowser => TeacherTestBrowserTemplate,
             _ => Placeholder,
         };
     }

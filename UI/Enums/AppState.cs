@@ -4,8 +4,9 @@ public enum AppState
 {
     LogIn = 0,
     StudentManager = 1,
-    TestBrowser = 2,
-    TeacherMenu = 3,
-    TestDetails = 4,
-    TestAttempt = 5,
+    StudentTestBrowser = 2,
+    TestDetails = 3,
+    TestAttempt = 4,
+    TeacherMenu = 5,
+    TeacherTestBrowser = 6,
 }

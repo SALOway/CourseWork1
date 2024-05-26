@@ -40,10 +40,10 @@ public partial class LogInViewModel : ObservableValidator
             switch (user.Role)
             {
                 case UserRole.Teacher:
-                    MessageBox.Show("Вчителя авторизовано");
+                    context.CurrentState = AppState.TeacherMenu;
                     break;
                 case UserRole.Student:
-                    context.CurrentState = AppState.TestBrowser;
+                    context.CurrentState = AppState.StudentTestBrowser;
                     break;
                 case UserRole.None:
                 default:

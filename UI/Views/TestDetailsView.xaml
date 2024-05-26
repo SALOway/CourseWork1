@@ -6,17 +6,23 @@
              xmlns:local="clr-namespace:UI.Views" 
              xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestDetailsViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="640" d:DesignWidth="1280">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
     <Grid>
         <!--Кнопка назад-->
         <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
-                HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="0,0,0,10"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="10"
                 Grid.Row="0"/>
         
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Label Content="{Binding Test.Model.Name, FallbackValue='Test Name'}" FontSize="48"
+                   HorizontalAlignment="Center"/>
+
+            <Label Content="{Binding Test.Model.Description, FallbackValue='Test Description'}" FontSize="24"
+                   Visibility="{Binding Test.Model.HasDesription, Converter={StaticResource BoolToVis}}"/>
 
             <Label Content="{Binding Test.QuestionsCount, FallbackValue='NULL'}"
                    ContentStringFormat="Кількість питань: {0}"

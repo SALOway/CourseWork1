@@ -96,6 +96,6 @@ public partial class TestDetailsViewModel : ObservableObject
 
         context.CurrentTestAttempt = null;
         context.CurrentTest = null;
-        context.CurrentState = AppState.TestBrowser;
+        context.CurrentState = AppState.StudentTestBrowser;
     }
 }

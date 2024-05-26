@@ -27,11 +27,17 @@ public partial class ObservableTest : ObservableObject
 
     public ObservableTest(Test test)
     {
+        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+
         Model = test;
         QuestionsCount = Model.Questions.Count;
-        LastAttemptStatus = GetLastAttemptStatus();
-        AttemptCount = GetAttemptCount();
         MaxGrade = Model.Questions.Sum(q => q.GradeValue);
+
+        if (context.CurrentUser!.Role == UserRole.Student)
+        {
+            LastAttemptStatus = GetLastAttemptStatus();
+            AttemptCount = GetAttemptCount();
+        }
     }
 
     public string AttemptsRatio => $"{AttemptCount} з {Model.MaxAttempts}";
