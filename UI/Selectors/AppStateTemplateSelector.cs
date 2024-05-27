@@ -13,6 +13,7 @@ public class AppStateTemplateSelector : DataTemplateSelector
     public DataTemplate? TestAttemptsTemplate { get; set; }
     public DataTemplate? TeacherMenuTemplate { get; set; }
     public DataTemplate? TeacherTestBrowserTemplate { get; set; }
+    public DataTemplate? TestEditorTemplate { get; set; }
 
     public override DataTemplate? SelectTemplate(object item, DependencyObject container)
     {
@@ -25,6 +26,7 @@ public class AppStateTemplateSelector : DataTemplateSelector
             AppState.TestAttempt => TestAttemptsTemplate,
             AppState.TeacherMenu => TeacherMenuTemplate,
             AppState.TeacherTestBrowser => TeacherTestBrowserTemplate,
+            AppState.TestEditor => TestEditorTemplate,
             _ => Placeholder,
         };
     }

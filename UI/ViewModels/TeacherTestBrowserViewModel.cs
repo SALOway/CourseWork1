@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Core.Enums;
+using Core.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
@@ -39,7 +41,7 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
             return;
         }
 
-        var tests = getTestsResult.Value;
+        var tests = getTestsResult.Value.ToList();
 
         Tests = new ObservableCollection<ObservableTest>(tests.Select(t => new ObservableTest(t)));
         FilteredTests = new ObservableCollection<ObservableTest>(Tests);
@@ -78,12 +80,17 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
     [RelayCommand]
     private void CreateNewTest()
     {
-        if (SelectedTest == null)
-        {
-            return;
-        }
+        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-        throw new NotImplementedException();
+        context.CurrentTest = new Test()
+        {
+            Name = string.Empty,
+            Creator = context.CurrentUser!,
+            Status = TestStatus.Draft,
+            MaxAttempts = 1,
+        };
+
+        context.CurrentState = AppState.TestEditor;
     }
 
     [RelayCommand]
@@ -94,7 +101,10 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
             return;
         }
 
-        throw new NotImplementedException();
+        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+
+        context.CurrentTest = SelectedTest.Model;
+        context.CurrentState = AppState.TestEditor;
     }
 
     [RelayCommand]

@@ -25,7 +25,7 @@ public class Test : BaseEntity
     public DateTime? Termin { get; set; }
 
     public bool HasTimer { get; set; } = false;
-    public TimeSpan TimeLimit { get; set; }
+    public TimeSpan? TimeLimit { get; set; }
 
     [Required]
     public StudentGroup StudentGroup { get; set; } = null!;

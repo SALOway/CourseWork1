@@ -9,4 +9,5 @@ public enum AppState
     TestAttempt = 4,
     TeacherMenu = 5,
     TeacherTestBrowser = 6,
+    TestEditor = 7
 }

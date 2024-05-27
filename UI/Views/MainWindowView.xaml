@@ -38,6 +38,10 @@
         <DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
             <local:TeacherTestBrowserView IsTabStop="False"/>
         </DataTemplate>
+        <!--Редактор тестів-->
+        <DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
+            <local:TestEditorView IsTabStop="False"/>
+        </DataTemplate>
 
         <!--Selectors-->
         <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
@@ -46,8 +50,8 @@
                                             TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
                                             TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
                                             TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
-                                            TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"/>
-                                            
+                                            TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
+                                            TestEditorTemplate="{StaticResource TestEditorTemplate}"/>
     </Window.Resources>
     <Grid>
         <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" 

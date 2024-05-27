@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Core.Enums;
 using Core.Models;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 using UI.Enums;
 using UI.ViewModels;
@@ -37,17 +37,7 @@ public partial class ObservableQuestion : ObservableObject
         }
         else
         {
-            // Probaly will create user answers in the DB
-            var getOptions = ServiceProvider.AnswerOptionService.GetAllOptionsForQuestion(question);
-            if (!getOptions.IsSuccess)
-            {
-                MessageBox.Show("Не вдалося завантажити варіанти відповіді");
-                Trace.WriteLine(getOptions.ErrorMessage);
-                return;
-            }
-
-            var answerOptions = getOptions.Value.ToList();
-            AnswerOptions = new ObservableCollection<ObservableAnswerOption>(answerOptions.Select(o => new ObservableAnswerOption(o)));
+            AnswerOptions = new ObservableCollection<ObservableAnswerOption>(question.AnswerOptions.Select(o => new ObservableAnswerOption(o)));
         }
     }
 }

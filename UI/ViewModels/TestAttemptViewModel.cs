@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using UI.Enums;
@@ -13,7 +14,7 @@ public partial class TestAttemptViewModel : ObservableObject
     private readonly DispatcherTimer? _timer;
 
     [ObservableProperty]
-    private ObservableCollection<ObservableQuestion> _questions;
+    private ObservableCollection<ObservableQuestion> _questions = [];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotFirst))]
@@ -29,7 +30,14 @@ public partial class TestAttemptViewModel : ObservableObject
     public TestAttemptViewModel()
     {
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-        var questions = context.CurrentTest!.Questions.Select(q => new ObservableQuestion(q));
+        var getQuestions = ServiceProvider.QuestionService.Get(q => context.CurrentTest!.Id == q.Test.Id);
+        if (!getQuestions.IsSuccess)
+        {
+            MessageBox.Show("Не вдалося завантажити питання");
+            Trace.WriteLine(getQuestions.ErrorMessage);
+            return;
+        }
+        var questions = getQuestions.Value.Select(q => new ObservableQuestion(q));
         Questions = new ObservableCollection<ObservableQuestion>(questions);
         SelectedQuestion = Questions.FirstOrDefault();
         if (context.CurrentTest!.HasTimer)
