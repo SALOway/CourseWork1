@@ -45,7 +45,7 @@
                         <GridViewColumn Header="Назва тесту" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Model.Name}" FontSize="24" 
+                                    <TextBlock Text="{Binding Name}" FontSize="24" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -63,9 +63,9 @@
                         <GridViewColumn Header="Строк" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Model.Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" 
+                                    <TextBlock Text="{Binding Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" 
                                                HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                               Visibility="{Binding Model.HasTermin, Converter={StaticResource BoolToVis}}"/>
+                                               Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

@@ -10,10 +10,13 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private User? _currentUser;
+
     [ObservableProperty]
     private Test? _currentTest;
+
     [ObservableProperty]
     private TestAttempt? _currentTestAttempt;
+
     [ObservableProperty]
     private AppState _currentState = AppState.LogIn;
 }

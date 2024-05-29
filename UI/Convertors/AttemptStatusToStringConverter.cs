@@ -8,7 +8,12 @@ public class AttemptStatusToStringConverter : IValueConverter
 {
     public object Convert(object value, Type TargetType, object parameter, CultureInfo culture)
     {
-        TestAttemptStatus testAttemptStatus = (TestAttemptStatus)value;
+        if (value == null)
+        {
+            return "-";
+        }
+
+        var testAttemptStatus = (TestAttemptStatus)value;
         return testAttemptStatus switch
         {
             TestAttemptStatus.InProcess => "In process",

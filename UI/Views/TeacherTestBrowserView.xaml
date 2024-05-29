@@ -23,34 +23,34 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
-                    <Label Content="{Binding Model.Name}" ContentStringFormat="Назва тесту: {0}"  FontSize="24"/>
-                    <TextBlock Text="{Binding Model.Description, StringFormat='{}Опис: {0}'}" FontSize="24"
+                    <Label Content="{Binding Name}" ContentStringFormat="Назва тесту: {0}"  FontSize="24"/>
+                    <TextBlock Text="{Binding Description, StringFormat='{}Опис: {0}'}" FontSize="24"
                                TextWrapping="Wrap"
-                               Visibility="{Binding Model.HasDesription, Converter={StaticResource BoolToVis}}"/>
+                               Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
                 
-                <Label Content="{Binding Model.StudentGroup.Name}" ContentStringFormat="Для групи {0}" FontSize="24"
+                <Label Content="{Binding StudentGroup.Name}" ContentStringFormat="Для групи {0}" FontSize="24"
                        Grid.Column="1"/>
 
                 <StackPanel Grid.Column="2">
-                    <Label Content="{Binding Model.Status}" ContentStringFormat="Статус тесту: {0}"  FontSize="24"/>
-                    <Label Content="{Binding Model.Termin}" ContentStringFormat="Термін: {0}"  FontSize="24"
-                           Visibility="{Binding Model.HasTermin, Converter={StaticResource BoolToVis}}"/>
+                    <Label Content="{Binding Status}" ContentStringFormat="Статус тесту: {0}"  FontSize="24"/>
+                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0}"  FontSize="24"
+                           Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="3">
-                    <Label Content="{Binding Model.TimeLimit}" ContentStringFormat="Ліміт часу: {0}"  FontSize="24"
-                           Visibility="{Binding Model.HasTimer, Converter={StaticResource BoolToVis}}"/>
-                    <Label Content="{Binding Model.RequiredGrade}" ContentStringFormat="Прохідний бал: {0}"  FontSize="24"
-                           Visibility="{Binding Model.HasRequiredGrade, Converter={StaticResource BoolToVis}}"/>
+                    <Label Content="{Binding TimeLimit}" ContentStringFormat="Ліміт часу: {0}"  FontSize="24"
+                           Visibility="{Binding HasTimer, Converter={StaticResource BoolToVis}}"/>
+                    <Label Content="{Binding RequiredGrade}" ContentStringFormat="Прохідний бал: {0}"  FontSize="24"
+                           Visibility="{Binding HasRequiredGrade, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="4">
-                    <Label Content="{Binding Model.Questions.Count}" ContentStringFormat="Кількість питань: {0}" FontSize="24"/>
-                    <Label Content="{Binding Model.MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"/>
+                    <Label Content="{Binding Questions.Count}" ContentStringFormat="Кількість питань: {0}" FontSize="24"/>
+                    <Label Content="{Binding MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"/>
                 </StackPanel>
 
-                <Label Content="{Binding Model.UpdatedAt}" ContentStringFormat="Востаннє змінно: {0}" FontSize="24"
+                <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0}" FontSize="24"
                        Grid.Column="5"/>
             </Grid>
         </DataTemplate>

@@ -34,7 +34,7 @@
                 <RadioButton IsChecked="{Binding IsChecked}" GroupName="Options"
                              Margin="0,0,10,0"
                              VerticalContentAlignment="Center">
-                    <TextBox Text="{Binding Model.Content}" FontSize="24" TextWrapping="Wrap"
+                    <TextBox Text="{Binding Content}" FontSize="24" TextWrapping="Wrap"
                              MinWidth="250"/>
                 </RadioButton>
             </StackPanel>
@@ -45,10 +45,22 @@
                 <CheckBox IsChecked="{Binding IsChecked}"
                           Margin="0,0,10,0"
                           VerticalContentAlignment="Center">
-                    <TextBox Text="{Binding Model.Content}" FontSize="24" TextWrapping="Wrap"
+                    <TextBox Text="{Binding Content}" FontSize="24" TextWrapping="Wrap"
                              MinWidth="250"/>
                 </CheckBox>
             </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SingleOptionQuestionOptions" DataType="models:ObservableQuestion">
+            <ListView ItemsSource="{Binding DataContext.SelectedQuestion.AnswerOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectionMode="Single"
+                      SelectedItem="{Binding DataContext.SelectedAnswerOption, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      ItemTemplate="{StaticResource SingleAnswerOptionTemplate}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MultipleOptionQuestionOptions" DataType="models:ObservableQuestion">
+            <ListView ItemsSource="{Binding DataContext.SelectedQuestion.AnswerOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectionMode="Single"
+                      SelectedItem="{Binding DataContext.SelectedAnswerOption, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                      ItemTemplate="{StaticResource MultipleAnswerOptionTemplate}"/>
         </DataTemplate>
 
         <DataTemplate x:Key="EnumItem">
@@ -58,8 +70,8 @@
 
         <!--Selectors-->
         <selectors:AnswerOptionTemplateSelector x:Key="AnswerOptionTemplateSelector"
-                                        RadioButtonTemplate="{StaticResource SingleAnswerOptionTemplate}"
-                                        CheckBoxTemplate="{StaticResource MultipleAnswerOptionTemplate}"/>
+                                                SingleOptionQuestionOptions="{StaticResource SingleOptionQuestionOptions}"
+                                                MultipleOptionQuestionOptions="{StaticResource MultipleOptionQuestionOptions}"/>
     </UserControl.Resources>
     
     <Grid>
@@ -77,29 +89,33 @@
             </Grid.RowDefinitions>
             <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
+                    <!--Назва Тесту-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Назва тесту:" FontSize="14"
                                VerticalAlignment="Top" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding CurrentTest.Name}" FontSize="14" MaxLines="1" MaxLength="100"
+                        <TextBox Text="{Binding Test.Name}" FontSize="14" MaxLines="1" MaxLength="100"
                                  VerticalAlignment="Center" MinWidth="200" MaxWidth="225" Height="Auto"
                                  TextWrapping="Wrap"/>
                     </StackPanel>
                     
-                    <CheckBox Content="Має опис" IsChecked="{Binding CurrentTest.HasDesription}" FontSize="14"
+                    <!--Має опис?-->
+                    <CheckBox Content="Має опис" IsChecked="{Binding Test.HasDescription}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
-                    
+
+                    <!--Опис-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
-                                Visibility="{Binding CurrentTest.HasDesription, Converter={StaticResource BoolToVis}}">
+                                Visibility="{Binding Test.HasDescription, Converter={StaticResource BoolToVis}}">
                         <Label Content="Опис:" FontSize="14" 
                                VerticalAlignment="Top" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding CurrentTest.Description}" FontSize="14"
+                        <TextBox Text="{Binding Test.Description}" FontSize="14"
                                  VerticalAlignment="Center" Height="Auto" MinWidth="200" MaxWidth="250"
                                  TextWrapping="Wrap"/>
                     </StackPanel>
-                    
+
+                    <!--Статус-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Статус:" FontSize="14" 
@@ -111,6 +127,7 @@
                                   VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
+                    <!--Група-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Група:" FontSize="14" 
@@ -122,50 +139,57 @@
                                   VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
+                    <!--Кількість спроб-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Кількість спроб:" FontSize="14" 
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <custom:IntegerInputBox Text="{Binding CurrentTest.MaxAttempts}" FontSize="14" MaxLength="10" MaxLines="1"
+                        <custom:IntegerInputBox Text="{Binding Test.MaxAttempts}" FontSize="14" MaxLength="10" MaxLines="1"
                                                 VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
-                    <CheckBox Content="Має прохідний бал" IsChecked="{Binding CurrentTest.HasRequiredGrade}" FontSize="14"
+                    <!--Має проходняк?-->
+                    <CheckBox Content="Має прохідний бал" IsChecked="{Binding Test.HasRequiredGrade}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
+                    <!--Проходняк-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
-                                Visibility="{Binding CurrentTest.HasRequiredGrade, Converter={StaticResource BoolToVis}}">
+                                Visibility="{Binding Test.HasRequiredGrade, Converter={StaticResource BoolToVis}}">
                         <Label Content="Прохідний бал:" FontSize="14" 
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <custom:IntegerInputBox Text="{Binding CurrentTest.RequiredGrade}" FontSize="14" MaxLength="1000" MaxLines="1"
+                        <custom:IntegerInputBox Text="{Binding Test.RequiredGrade}" FontSize="14" MaxLength="1000" MaxLines="1"
                                                 VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
-                    <CheckBox Content="Має термін" IsChecked="{Binding CurrentTest.HasTermin}" FontSize="14"
+                    <!--Має термін?-->
+                    <CheckBox Content="Має термін" IsChecked="{Binding Test.HasTermin}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
+                    <!--Термін-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
-                                Visibility="{Binding CurrentTest.HasTermin, Converter={StaticResource BoolToVis}}">
+                                Visibility="{Binding Test.HasTermin, Converter={StaticResource BoolToVis}}">
                         <Label Content="Термін:" FontSize="14" 
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <DatePicker SelectedDate="{Binding CurrentTest.Termin}" FontSize="14" 
+                        <DatePicker SelectedDate="{Binding Test.Termin}" FontSize="14" 
                                     VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <CheckBox Content="Має часове обмеження" IsChecked="{Binding CurrentTest.HasTimer}" FontSize="14"
+                    <!--Має обмж?-->
+                    <CheckBox Content="Має часове обмеження" IsChecked="{Binding Test.HasTimer}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
+                    <!--Обмж-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
-                                Visibility="{Binding CurrentTest.HasTimer, Converter={StaticResource BoolToVis}}">
+                                Visibility="{Binding Test.HasTimer, Converter={StaticResource BoolToVis}}">
                         <Label Content="Часове обмеження:" FontSize="14" 
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <xctk:TimePicker Value="{Binding TimeLimit}" Kind="Local" MinWidth="100"/>
+                        <xctk:TimePicker Value="{Binding TimeLimit}" Kind="Local" Format="LongTime" MinWidth="100"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
@@ -209,7 +233,7 @@
                     <Label Content="Оцінка за питання:" FontSize="24"
                            HorizontalAlignment="Left" Margin="0,0,10,0"
                            Grid.Column="0"/>
-                    <custom:IntegerInputBox Text="{Binding SelectedQuestion.Model.GradeValue}" FontSize="24"
+                    <custom:IntegerInputBox Text="{Binding SelectedQuestion.GradeValue}" FontSize="24"
                                             VerticalAlignment="Bottom"
                                             Grid.Column="1"/>
                 </Grid>
@@ -225,7 +249,7 @@
                            Grid.Column="0"/>
                     <ComboBox ItemsSource="{Binding QuestionTypes}"
                               ItemTemplate="{StaticResource EnumItem}"
-                              SelectedItem="{Binding SelectedQuestionType}"
+                              SelectedItem="{Binding SelectedQuestion.QuestionType}"
                               FontSize="24"
                               VerticalAlignment="Center" Margin="10,0,10,0"
                               Grid.Column="1"/>
@@ -234,17 +258,17 @@
             
             <!--Питання-->
             <Border Grid.Row="1" Padding="25">
-                <TextBox Text="{Binding SelectedQuestion.Model.Content}" FontSize="24" TextWrapping="Wrap"
+                <TextBox Text="{Binding SelectedQuestion.Content}" FontSize="24" TextWrapping="Wrap"
                              VerticalAlignment="Stretch" Margin="10,0,10,0"/>
             </Border>
 
             <!--Список з варіантів відповіді-->
-            <ListView ItemsSource="{Binding SelectedQuestion.AnswerOptions}" SelectionMode="Single"
-                      SelectedItem="{Binding SelectedAnswerOption}"
-                      ItemTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
-                      VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"
-                      HorizontalContentAlignment="Stretch"
-                      Grid.Row="2"/>
+            <ContentControl Content="{Binding SelectedQuestion.QuestionType}"
+                            ContentTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
+                            VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"
+                            HorizontalContentAlignment="Stretch"
+                            Grid.Row="2"/>
+            
 
             <!--Кнопка додавання та видалення варіанту відповіді-->
             <StackPanel Orientation="Horizontal" 
@@ -275,9 +299,10 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ListView ItemsSource="{Binding Questions}" 
+            
+            <ListView ItemsSource="{Binding Test.Questions}" 
                       SelectedItem="{Binding SelectedQuestion}" 
-                      AlternationCount="{Binding Questions.Count}"
+                      AlternationCount="{Binding Test.Questions.Count}"
                       ItemTemplate="{StaticResource QuestionItem}"
                       SelectionMode="Single" 
                       HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"

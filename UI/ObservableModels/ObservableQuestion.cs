@@ -2,9 +2,11 @@
 using Core.Enums;
 using Core.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using UI.Enums;
-using UI.ViewModels;
 
 namespace UI.ObservableModels;
 
@@ -12,6 +14,15 @@ public partial class ObservableQuestion : ObservableObject
 {
     [ObservableProperty]
     private Question _model;
+
+    [ObservableProperty]
+    private string _content;
+
+    [ObservableProperty]
+    private QuestionType _questionType;
+
+    [ObservableProperty]
+    private int _gradeValue;
 
     [ObservableProperty]
     private ObservableCollection<ObservableAnswerOption> _answerOptions = [];
@@ -22,22 +33,34 @@ public partial class ObservableQuestion : ObservableObject
     public ObservableQuestion(Question question)
     {
         Model = question;
+        Content = question.Content;
+        QuestionType = question.Type;
+        GradeValue = question.GradeValue;
+    }
 
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    public void SaveModel()
+    {
+        Model.Content = Content;
+        Model.Type = QuestionType;
+        Model.GradeValue = GradeValue;
+        Model.UpdatedAt = DateTime.UtcNow;
+        ServiceProvider.QuestionService.Update(Model);
+    }
 
-        var userAnswers = question.UserAnswers.Where(a => a.User.Id == context.CurrentUser!.Id);
-        if (userAnswers.Any())
+    partial void OnQuestionTypeChanged(QuestionType value)
+    {
+        if (value == QuestionType.SingleChoice)
         {
-            if (userAnswers.Any(a => a.IsSelected))
+            bool singleAnswerOptionChecked = false;
+            foreach (var answerOption in AnswerOptions)
             {
-                State = QuestionState.Answered;
+                if (!singleAnswerOptionChecked && answerOption.IsChecked)
+                {
+                    singleAnswerOptionChecked = true;
+                    continue;
+                }
+                answerOption.IsChecked = false;
             }
-            
-            AnswerOptions = new ObservableCollection<ObservableAnswerOption>(userAnswers.Select(a => new ObservableAnswerOption(a.AnswerOption, a.IsSelected)));
-        }
-        else
-        {
-            AnswerOptions = new ObservableCollection<ObservableAnswerOption>(question.AnswerOptions.Select(o => new ObservableAnswerOption(o)));
         }
     }
 }
