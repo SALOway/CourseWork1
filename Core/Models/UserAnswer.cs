@@ -8,10 +8,13 @@ public class UserAnswer : BaseEntity
 
     [Required]
     public AnswerOption AnswerOption { get; set; } = null!;
+
     [Required]
     public TestAttempt TestAttempt { get; set; } = null!;
+
     [Required]
     public User User { get; set; } = null!;
+
     [Required]
     public Question Question { get; set; } = null!;
 }

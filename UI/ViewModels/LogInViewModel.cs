@@ -1,59 +1,78 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using UI.Enums;
+using UI.Interfaces;
 
 namespace UI.ViewModels;
 
 public partial class LogInViewModel : ObservableValidator
 {
-    [ObservableProperty]
-    [NotifyDataErrorInfo]
-    [Required]
-    [StringLength(64, MinimumLength = 2)]
-    private string _username = string.Empty;
+    private readonly IUserService _userService;
+    private readonly ISessionContext _sessionContext;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required]
-    [StringLength(64, MinimumLength = 2)]
-    private string _password = string.Empty;
+    [StringLength(16, MinimumLength = 2)]
+    private string? _username = string.Empty;
+
+    [ObservableProperty]
+    [NotifyDataErrorInfo]
+    [Required]
+    [StringLength(16, MinimumLength = 2)]
+    private string? _password = string.Empty;
+
+    public LogInViewModel(IUserService userService, ISessionContext sessionContext)
+    {
+        _userService = userService;
+        _sessionContext = sessionContext;
+    }
 
     [RelayCommand]
     private void LogIn()
     {
         ValidateAllProperties();
-        if (HasErrors)
+        if (HasErrors || Username == null || Password == null)
         {
             return;
         }
 
-        var userService = ServiceProvider.UserService;
-        var authResult = userService.Authenticate(Username, Password);
+        var authResult = _userService.Authenticate(Username, Password);
         if (authResult.IsSuccess)
         {
             var user = authResult.Value;
-            var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-            context.CurrentUser = user;
+            _sessionContext.CurrentUserId = user.Id;
             switch (user.Role)
             {
                 case UserRole.Teacher:
-                    context.CurrentState = AppState.TeacherMenu;
+                    _sessionContext.CurrentState = AppState.TeacherMenu;
                     break;
                 case UserRole.Student:
-                    context.CurrentState = AppState.StudentTestBrowser;
+                    _sessionContext.CurrentState = AppState.StudentTestBrowser;
                     break;
                 case UserRole.None:
                 default:
-                    MessageBox.Show("Даного юзера неможливо авторизувати");
+                    MessageBox.Show("Даного юзера неможливо авторизувати.", "Помилка авторизації", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
             }
         }
         else
         {
-            MessageBox.Show(authResult.ErrorMessage);
+            MessageBox.Show("Виникла критична помилка.\n" + authResult.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    partial void OnPasswordChanging(string? value)
+    {
+        ClearErrors(nameof(Password));
+    }
+
+    partial void OnUsernameChanging(string? value)
+    {
+        ClearErrors(nameof(Username));
     }
 }

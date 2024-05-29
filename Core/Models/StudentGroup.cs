@@ -8,5 +8,6 @@ public class StudentGroup : BaseEntity
     public string Name { get; set; } = null!;
 
     public IList<User> Students { get; set; } = [];
+
     public IList<Test> Tests { get; set; } = [];
 }

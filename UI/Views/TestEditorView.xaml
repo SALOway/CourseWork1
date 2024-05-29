@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:UI.Views"
-             xmlns:convertors="clr-namespace:UI.Convertors"
+             xmlns:converters="clr-namespace:UI.Converters"
              xmlns:selectors="clr-namespace:UI.Selectors"
              xmlns:models="clr-namespace:UI.ObservableModels"
              xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestEditorViewModel}"
@@ -13,8 +13,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="640" d:DesignWidth="1280">
     <UserControl.Resources>
-        <convertors:IndexToNumberConverter x:Key="IndexToNum"/>
-        <convertors:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+        <converters:IndexToNumberConverter x:Key="IndexToNum"/>
+        <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
         <!--Question template-->

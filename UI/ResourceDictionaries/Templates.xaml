@@ -1,0 +1,20 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:UI.Converters">
+    <converters:ValidationErrorConverter x:Key="ValidationErrorConverter"/>
+
+    <ControlTemplate x:Key="ValidationErrorTemplate">
+        <StackPanel>
+            <Border BorderBrush="Red" BorderThickness="1" HorizontalAlignment="Left"
+                Width="{Binding AdornedElement.Width, ElementName=Adorner}"
+                Height="{Binding AdornedElement.Height, ElementName=Adorner}">
+                <AdornedElementPlaceholder Name="Adorner"/>
+            </Border>
+            <TextBlock Foreground="Red" Margin="5,0,0,0"
+                       Text="{Binding AdornedElement.(Validation.Errors), 
+                                      ElementName=Adorner,
+                                      NotifyOnSourceUpdated=True,
+                                      Converter={StaticResource ValidationErrorConverter}}"/>
+        </StackPanel>
+    </ControlTemplate>
+</ResourceDictionary>

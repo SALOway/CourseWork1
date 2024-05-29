@@ -6,7 +6,7 @@ using DAL.Repositories;
 
 namespace UI;
 
-public class ServiceProvider
+public static class ServiceProvider
 {
     public static readonly IAnswerOptionService AnswerOptionService;
     public static readonly IQuestionService QuestionService;
@@ -16,7 +16,6 @@ public class ServiceProvider
     public static readonly IUserAnswerService UserAnswerService;
     public static readonly IUserService UserService;
 
-    // provokes freeze at the begining since doesn't created until accessed first time
     static ServiceProvider()
     {
         var context = new CourseWorkAppContext();
@@ -29,12 +28,5 @@ public class ServiceProvider
         TestService = new TestService(new TestRepository(context));
         UserAnswerService = new UserAnswerService(new GenericRepository<UserAnswer>(context));
         UserService = new UserService(new UserRepository(context));
-    }
-
-    private ServiceProvider() { }
-
-    public static void Init()
-    {
-        // AHAHAHAHAHAHAHAH
     }
 }

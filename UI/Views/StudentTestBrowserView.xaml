@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UI.Views" 
              xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:StudentTestBrowserViewModel}"
-             xmlns:converters="clr-namespace:UI.Convertors"
+             xmlns:converters="clr-namespace:UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="640" d:DesignWidth="1280">
     <UserControl.Resources>

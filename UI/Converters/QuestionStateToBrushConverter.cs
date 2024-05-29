@@ -3,7 +3,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using UI.Enums;
 
-namespace UI.Convertors;
+namespace UI.Converters;
 
 public class QuestionStateToBrushConverter : IValueConverter
 {
