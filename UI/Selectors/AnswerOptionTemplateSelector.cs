@@ -7,14 +7,18 @@ namespace UI.Selectors;
 
 public class AnswerOptionTemplateSelector : DataTemplateSelector
 {
-    public DataTemplate RadioButtonTemplate { get; set; }
-    public DataTemplate CheckBoxTemplate { get; set; }
+    public DataTemplate SingleOptionQuestionOptions { get; set; }
+    public DataTemplate MultipleOptionQuestionOptions { get; set; }
 
     public override DataTemplate SelectTemplate(object item, DependencyObject container)
     {
-        if (item is ObservableAnswerOption answerOption)
+        if (item is ObservableQuestion question)
         {
-            return answerOption.Model.Question.Type == QuestionType.SingleChoice ? RadioButtonTemplate : CheckBoxTemplate;
+            return question.QuestionType == QuestionType.SingleChoice ? SingleOptionQuestionOptions : MultipleOptionQuestionOptions;
+        }
+        else if (item is QuestionType questionType)
+        {
+            return questionType == QuestionType.SingleChoice ? SingleOptionQuestionOptions : MultipleOptionQuestionOptions;
         }
         return base.SelectTemplate(item, container);
     }

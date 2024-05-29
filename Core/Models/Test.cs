@@ -6,7 +6,6 @@ namespace Core.Models;
 public class Test : BaseEntity
 {
     [Required]
-    [MinLength(1)]
     public string Name { get; set; } = null!;
     public bool HasDesription { get; set; }
     public string? Description { get; set; }

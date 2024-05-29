@@ -54,7 +54,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("AnswerOptions");
+                    b.ToTable("AnswerOptions", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Question", b =>
@@ -92,7 +92,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.StudentGroup", b =>
@@ -122,7 +122,7 @@ namespace DAL.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("StudentGroups");
+                    b.ToTable("StudentGroups", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.Test", b =>
@@ -189,7 +189,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("StudentGroupId");
 
-                    b.ToTable("Tests");
+                    b.ToTable("Tests", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.TestAttempt", b =>
@@ -243,7 +243,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TestAttempts");
+                    b.ToTable("TestAttempts", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.User", b =>
@@ -293,7 +293,7 @@ namespace DAL.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.UserAnswer", b =>
@@ -339,7 +339,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAnswers");
+                    b.ToTable("UserAnswers", (string)null);
                 });
 
             modelBuilder.Entity("Core.Models.AnswerOption", b =>

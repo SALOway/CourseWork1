@@ -48,12 +48,4 @@ public class CourseWorkAppContext : DbContext
 
         throw new ArgumentException($"All entites must be of type {typeof(BaseEntity).Name}");
     }
-
-    public override void RemoveRange(IEnumerable<object> entities)
-    {
-        foreach (EntityEntry<object> entity in entities.Cast<EntityEntry<object>>())
-        {
-            Remove(entity);
-        }
-    }
 }

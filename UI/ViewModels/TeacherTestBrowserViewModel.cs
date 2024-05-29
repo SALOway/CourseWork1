@@ -34,16 +34,54 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
         var user = context.CurrentUser;
 
-        var getTestsResult = ServiceProvider.TestService.Get();
-        if (!getTestsResult.IsSuccess)
+        var getTests = ServiceProvider.TestService.Get();
+        if (!getTests.IsSuccess)
         {
-            MessageBox.Show(getTestsResult.ErrorMessage);
+            MessageBox.Show(getTests.ErrorMessage);
             return;
         }
 
-        var tests = getTestsResult.Value.ToList();
+        var tests = getTests.Value.ToList();
 
-        Tests = new ObservableCollection<ObservableTest>(tests.Select(t => new ObservableTest(t)));
+        foreach (var test in tests)
+        {
+            var observableTest = new ObservableTest(test);
+
+            var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
+            if (!getQuestions.IsSuccess)
+            {
+                MessageBox.Show(getQuestions.ErrorMessage);
+                return;
+            }
+
+            var questions = getQuestions.Value.ToList();
+
+            foreach (var question in questions)
+            {
+                var observableQuestion = new ObservableQuestion(question);
+
+                var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
+                if (!getAnswerOption.IsSuccess)
+                {
+                    MessageBox.Show(getAnswerOption.ErrorMessage);
+                    return;
+                }
+
+                var answerOptions = getAnswerOption.Value.ToList();
+
+                foreach (var answerOption in answerOptions)
+                {
+                    var observableAnswerOption = new ObservableAnswerOption(answerOption, null);
+
+                    observableQuestion.AnswerOptions.Add(observableAnswerOption);
+                }
+
+                observableTest.Questions.Add(observableQuestion);
+            }
+
+            Tests.Add(observableTest);
+        }
+
         FilteredTests = new ObservableCollection<ObservableTest>(Tests);
     }
 
@@ -82,14 +120,81 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
     {
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-        context.CurrentTest = new Test()
+        var getGroup = ServiceProvider.StudentGroupService.Get();
+        if (!getGroup.IsSuccess)
+        {
+            MessageBox.Show("При отриманні групи виникла помилка");
+            Trace.WriteLine(getGroup.ErrorMessage);
+            return;
+        }
+
+        var group = getGroup.Value.FirstOrDefault();
+        if (group == null)
+        {
+            MessageBox.Show("Неможливо створити тест. Не існує жодної групи");
+            return;
+        }
+
+        var newTest = new Test()
         {
             Name = string.Empty,
             Creator = context.CurrentUser!,
             Status = TestStatus.Draft,
             MaxAttempts = 1,
+            StudentGroup = group
         };
 
+        var createTest = ServiceProvider.TestService.Add(newTest);
+        if (!createTest.IsSuccess)
+        {
+            MessageBox.Show("При створені нового тесту виникла помилка");
+            Trace.WriteLine(createTest.ErrorMessage);
+            return;
+        }
+        context.CurrentTest = newTest;
+
+        var question = new Question()
+        {
+            Content = "",
+            Type = QuestionType.SingleChoice,
+            GradeValue = 0,
+            Test = newTest
+        };
+
+        var createQuestion = ServiceProvider.QuestionService.Add(question);
+        if (!createQuestion.IsSuccess)
+        {
+            MessageBox.Show("При створені нового питання виникла помилка");
+            Trace.WriteLine(createQuestion.ErrorMessage);
+            return;
+        }
+
+        var answerOptions = new List<AnswerOption>
+        {
+            new()
+            {
+                Content = string.Empty,
+                Question = question
+            },
+            new()
+            {
+                Content = string.Empty,
+                Question = question
+            }
+        };
+
+        foreach (var answerOption in answerOptions)
+        {
+            var createAnswerOptions = ServiceProvider.AnswerOptionService.Add(answerOption);
+            if (!createAnswerOptions.IsSuccess)
+            {
+                MessageBox.Show("При створені нового варіанту відповіді виникла помилка");
+                Trace.WriteLine(createAnswerOptions.ErrorMessage);
+                return;
+            }
+        }
+
+        context.CurrentTest = newTest;
         context.CurrentState = AppState.TestEditor;
     }
 

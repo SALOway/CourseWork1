@@ -35,7 +35,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         }
         else
         {
-            FilteredTests = new ObservableCollection<ObservableTest>(Tests.Where(t => t.Model.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
+            FilteredTests = new ObservableCollection<ObservableTest>(Tests.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
         }
     }
 
@@ -74,16 +74,56 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
         var user = context.CurrentUser;
 
-        var getTestsResult = ServiceProvider.TestService.GetTestsByGroup(user!.StudentGroup!);
-        if (!getTestsResult.IsSuccess)
+        var getTests = ServiceProvider.TestService.GetTestsByGroup(user!.StudentGroup!);
+        if (!getTests.IsSuccess)
         {
-            MessageBox.Show(getTestsResult.ErrorMessage);
+            MessageBox.Show(getTests.ErrorMessage);
             return;
         }
 
-        var tests = getTestsResult.Value;
+        var tests = getTests.Value.ToList();
 
-        Tests = new ObservableCollection<ObservableTest>(tests.Select(t => new ObservableTest(t)));
+        foreach (var test in tests)
+        {
+            var observableTest = new ObservableTest(test);
+
+            var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
+            if (!getQuestions.IsSuccess)
+            {
+                MessageBox.Show(getQuestions.ErrorMessage);
+                return;
+            }
+
+            var questions = getQuestions.Value.ToList();
+
+            foreach (var question in questions)
+            {
+                var observableQuestion = new ObservableQuestion(question);
+
+                var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
+                if (!getAnswerOption.IsSuccess)
+                {
+                    MessageBox.Show(getAnswerOption.ErrorMessage);
+                    return;
+                }
+
+                var answerOptions = getAnswerOption.Value.ToList();
+
+                foreach(var answerOption in answerOptions)
+                {
+                    var getUserAnswers = ServiceProvider.UserAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == user.Id);
+                    var userAnswer = getUserAnswers.Value.FirstOrDefault();
+                    var observableAnswerOption = new ObservableAnswerOption(answerOption, userAnswer);
+
+                    observableQuestion.AnswerOptions.Add(observableAnswerOption);
+                }
+
+                observableTest.Questions.Add(observableQuestion);
+            }
+
+            Tests.Add(observableTest);
+        }
+
         FilteredTests = new ObservableCollection<ObservableTest>(Tests);
     }
 }

@@ -31,7 +31,7 @@
         <!--Option templates-->
         <DataTemplate x:Key="SingleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
             <StackPanel Orientation="Horizontal">
-                <RadioButton Content="{Binding Model.Content}" FontSize="24"
+                <RadioButton Content="{Binding Content}" FontSize="24"
                              IsChecked="{Binding IsChecked}" GroupName="Options"
                              VerticalAlignment="Center" Margin="0,0,10,0"
                              VerticalContentAlignment="Center"/>
@@ -40,17 +40,31 @@
         
         <DataTemplate x:Key="MultipleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
             <StackPanel Orientation="Horizontal">
-                <CheckBox Content="{Binding Model.Content}" FontSize="24"
+                <CheckBox Content="{Binding Content}" FontSize="24"
                           IsChecked="{Binding IsChecked}"
                           VerticalAlignment="Center" Margin="0,0,10,0"
                           VerticalContentAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
 
+        <DataTemplate x:Key="SingleOptionQuestionOptions">
+            <ItemsControl ItemsSource="{Binding AnswerOptions}"
+                          ItemTemplate="{StaticResource SingleAnswerOptionTemplate}"
+                          VerticalAlignment="Top" Margin="20,0,20,0"
+                          Grid.Row="3"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MultipleOptionQuestionOptions">
+            <ItemsControl ItemsSource="{Binding AnswerOptions}"
+                          ItemTemplate="{StaticResource MultipleAnswerOptionTemplate}"
+                          VerticalAlignment="Top" Margin="20,0,20,0"
+                          Grid.Row="3"/>
+        </DataTemplate>
+
         <!--Selectors-->
         <selectors:AnswerOptionTemplateSelector x:Key="AnswerOptionTemplateSelector"
-                                                RadioButtonTemplate="{StaticResource SingleAnswerOptionTemplate}"
-                                                CheckBoxTemplate="{StaticResource MultipleAnswerOptionTemplate}"/>
+                                                SingleOptionQuestionOptions="{StaticResource SingleOptionQuestionOptions}"
+                                                MultipleOptionQuestionOptions="{StaticResource MultipleOptionQuestionOptions}"/>
     </UserControl.Resources>
     
     <Grid>
@@ -74,7 +88,7 @@
 
                 <!--Кнопка назад-->
                 <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
-                        HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="0,0,0,10"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="10"
                         Grid.Row="0"/>
 
                 <Label Content="{Binding SelectedQuestionNumber}" ContentStringFormat="Питання #{0}"  FontSize="24"
@@ -86,16 +100,17 @@
                        Visibility="{Binding HasTimer, Converter={StaticResource BoolToVis}}"/>
 
                 <Border Grid.Row="2" Padding="25">
-                    <TextBlock Text="{Binding SelectedQuestion.Model.Content}" FontSize="24" TextWrapping="Wrap"
+                    <TextBlock Text="{Binding SelectedQuestion.Content}" FontSize="24" TextWrapping="Wrap"
                                VerticalAlignment="Top" Margin="10,0,10,0"/>
                 </Border>
                 
                 <!--Список з варіантів відповіді-->
-                <ItemsControl ItemsSource="{Binding SelectedQuestion.AnswerOptions}"
-                              ItemTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
-                              VerticalAlignment="Top" Margin="10,0,10,0"
-                              Grid.Row="3"/>
-                
+                <ContentControl Content="{Binding SelectedQuestion}" 
+                                ContentTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
+                                VerticalAlignment="Top" Margin="20,0,20,0"
+                                HorizontalContentAlignment="Stretch"
+                                Grid.Row="3"/>
+
                 <!--Кнопки перемикання питання-->
                 <Button Content="Минулий" FontSize="24" Command="{Binding PreviousCommand}"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Padding="25,5,25,5"
@@ -113,9 +128,9 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ListView ItemsSource="{Binding Questions}" 
+                <ListView ItemsSource="{Binding TestAttempt.Test.Questions}" 
                           SelectedItem="{Binding SelectedQuestion}" 
-                          AlternationCount="{Binding Questions.Count}"
+                          AlternationCount="{Binding TestAttempt.Test.Questions.Count}"
                           ItemTemplate="{StaticResource QuestionItem}"
                           SelectionMode="Single" 
                           HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"

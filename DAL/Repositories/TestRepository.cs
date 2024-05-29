@@ -14,6 +14,7 @@ public class TestRepository(DbContext dbContext) : GenericRepository<Test>(dbCon
             IQueryable<Test> query = _dbContext.Set<Test>()
                 .Include(t => t.Questions)
                 .Include(t => t.TestAttempts)
+                .Include(t => t.StudentGroup)
                 .Where(t => !t.IsDeleted);
             if (expression != null)
             {
