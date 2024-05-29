@@ -13,7 +13,7 @@ public class TestAttempt : BaseEntity
 
     public bool HasLeftoverTime { get; set; } = false;
 
-    public TimeSpan? LeftoverTime { get; set; }
+    public DateTime? LeftoverTime { get; set; }
 
     [EnumDataType(typeof(TestAttemptStatus))]
     public TestAttemptStatus Status { get; set; } = TestAttemptStatus.InProcess;

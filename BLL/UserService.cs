@@ -2,6 +2,7 @@
 using Core.Enums;
 using Core.Models;
 using DAL.Repositories.Interfaces;
+using System;
 using System.Linq.Expressions;
 
 namespace BLL;
@@ -23,6 +24,23 @@ public class UserService(IGenericRepository<User> repository) : IUserService
 
         return _repository.Create(user);
     }
+    public Result<User> GetById(Guid id)
+    {
+        var getResult = _repository.Get(u => u.Id == id);
+        if (!getResult.IsSuccess)
+        {
+            return Result<User>.Failure(getResult.AppErrors);
+        }
+
+        var user = getResult.Value.FirstOrDefault();
+        if (user == null)
+        {
+            return Result<User>.Failure("Користувача з даним id не існує");
+        }
+
+        return Result<User>.Success(user);
+    }
+
     public Result<IQueryable<User>> Get(Expression<Func<User, bool>>? predicate = null)
     {
         var getResult = _repository.Get(predicate);

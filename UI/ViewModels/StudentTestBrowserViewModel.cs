@@ -1,8 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Core.Enums;
+using Core.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
 using UI.Enums;
+using UI.Interfaces;
 using UI.ObservableModels;
 
 namespace UI.ViewModels;
@@ -20,9 +24,21 @@ public partial class StudentTestBrowserViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableTest? _selectedTest;
+    private readonly ISessionContext _sessionContext;
+    private readonly IUserService _userService;
+    private readonly ITestService _testService;
+    private readonly IQuestionService _questionService;
+    private readonly IAnswerOptionService _answerOptionService;
+    private readonly IUserAnswerService _userAnswerService;
 
-    public StudentTestBrowserViewModel()
+    public StudentTestBrowserViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService)
     {
+        _sessionContext = sessionContext;
+        _userService = userService;
+        _testService = testService;
+        _questionService = questionService;
+        _answerOptionService = answerOptionService;
+        _userAnswerService = userAnswerService;
         LoadTests();
     }
 
@@ -40,12 +56,10 @@ public partial class StudentTestBrowserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static void LogOut()
+    private void LogOut()
     {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-
-        context.CurrentUser = null;
-        context.CurrentState = AppState.LogIn;
+        _sessionContext.CurrentUserId = null;
+        _sessionContext.CurrentState = AppState.LogIn;
     }
 
     [RelayCommand]
@@ -56,29 +70,69 @@ public partial class StudentTestBrowserViewModel : ObservableObject
             return;
         }
 
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-
-        context.CurrentTest = SelectedTest.Model;
-        context.CurrentState = AppState.TestDetails;
-    }
-
-    partial void OnSelectedTestChanged(ObservableTest? value)
-    {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-
-        context.CurrentTest = value?.Model;
+        _sessionContext.CurrentTestId = SelectedTest.TestId;
+        _sessionContext.CurrentState = AppState.TestDetails;
     }
 
     private void LoadTests()
     {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-        var user = context.CurrentUser;
+        if (!TryGetCurrentUser(out var user) || !TryGetObservableTests(user.StudentGroup!, out var tests))
+        {
+            LogOut();
+            return;
+        }
 
-        var getTests = ServiceProvider.TestService.GetTestsByGroup(user!.StudentGroup!);
+        Tests = tests;
+        FilteredTests = new ObservableCollection<ObservableTest>(Tests);
+    }
+
+    private bool TryGetCurrentUser(out User user)
+    {
+        user = null!;
+
+        if (_sessionContext.CurrentUserId == null)
+        {
+            MessageBox.Show("Поточний користувач не встановлений", "Помилка наявності користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var getUser = _userService.GetById(_sessionContext.CurrentUserId.Value);
+        if (!getUser.IsSuccess)
+        {
+            MessageBox.Show("Неможливо завантажити дані користувача", "Помилка отримання користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        user = getUser.Value;
+
+        if (user == null)
+        {
+            MessageBox.Show("Неможливо завантажити тести без користувача.\n", "Помилка завантаження тестів", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+        else if (user.Role != UserRole.Student)
+        {
+            MessageBox.Show("Користувач не є студентом.\n", "Помилка ролі користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+        else if (user.StudentGroup == null)
+        {
+            MessageBox.Show("Студент не належить жодній групі.\n", "Помилка належності до групи", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryGetObservableTests(StudentGroup studentGroup, out ObservableCollection<ObservableTest> observableTests)
+    {
+        observableTests = [];
+
+        var getTests = _testService.GetTestsByGroup(studentGroup);
         if (!getTests.IsSuccess)
         {
-            MessageBox.Show(getTests.ErrorMessage);
-            return;
+            MessageBox.Show("Виникла критична помилка\n" + getTests.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
         }
 
         var tests = getTests.Value.ToList();
@@ -87,43 +141,92 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         {
             var observableTest = new ObservableTest(test);
 
-            var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
-            if (!getQuestions.IsSuccess)
+            if (!TryGetObservableQuestions(test, out var questions))
             {
-                MessageBox.Show(getQuestions.ErrorMessage);
-                return;
+                return false;
             }
 
-            var questions = getQuestions.Value.ToList();
+            observableTest.Questions = questions;
 
-            foreach (var question in questions)
-            {
-                var observableQuestion = new ObservableQuestion(question);
-
-                var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
-                if (!getAnswerOption.IsSuccess)
-                {
-                    MessageBox.Show(getAnswerOption.ErrorMessage);
-                    return;
-                }
-
-                var answerOptions = getAnswerOption.Value.ToList();
-
-                foreach(var answerOption in answerOptions)
-                {
-                    var getUserAnswers = ServiceProvider.UserAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == user.Id);
-                    var userAnswer = getUserAnswers.Value.FirstOrDefault();
-                    var observableAnswerOption = new ObservableAnswerOption(answerOption, userAnswer);
-
-                    observableQuestion.AnswerOptions.Add(observableAnswerOption);
-                }
-
-                observableTest.Questions.Add(observableQuestion);
-            }
-
-            Tests.Add(observableTest);
+            observableTests.Add(observableTest);
         }
 
-        FilteredTests = new ObservableCollection<ObservableTest>(Tests);
+        return true;
+    }
+
+    private bool TryGetObservableQuestions(Test test, out ObservableCollection<ObservableQuestion> observableQuestions)
+    {
+        observableQuestions = [];
+
+        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
+        if (!getQuestions.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getQuestions.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var questions = getQuestions.Value.ToList();
+
+        foreach (var question in questions)
+        {
+            var observableQuestion = new ObservableQuestion(question);
+
+            if (!TryGetObservableAnswerOptions(question, out var observableAnswerOptions))
+            {
+                return false;
+            }
+
+            observableQuestion.AnswerOptions = observableAnswerOptions;
+
+            observableQuestions.Add(observableQuestion);
+        }
+
+        return true;
+    }
+
+    private bool TryGetObservableAnswerOptions(Question question, out ObservableCollection<ObservableAnswerOption> observableAnswerOptions)
+    {
+        observableAnswerOptions = [];
+
+        var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
+        if (!getAnswerOption.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var answerOptions = getAnswerOption.Value.ToList();
+
+        foreach (var answerOption in answerOptions)
+        {
+            if (!TryGetUserAnswer(answerOption, out var userAnswer))
+            {
+                return false;
+            }
+            var isChecked = userAnswer?.IsSelected ?? false;
+
+            var observableAnswerOption = new ObservableAnswerOption(answerOption, isChecked);
+
+            observableAnswerOptions.Add(observableAnswerOption);
+        }
+
+        return true;
+    }
+
+    private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
+    {
+        userAnswer = null!;
+
+        var getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
+
+        if (!getUserAnswers.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getUserAnswers.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        userAnswer = getUserAnswers.Value.FirstOrDefault();
+
+        return true;
     }
 }

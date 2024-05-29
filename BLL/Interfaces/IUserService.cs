@@ -5,9 +5,10 @@ namespace BLL.Interfaces;
 
 public interface IUserService
 {
-    public Result Add(User user);
-    public Result<IQueryable<User>> Get(Expression<Func<User, bool>>? predicate = null);
-    public Result Update(User user);
-    public Result Remove(Expression<Func<User, bool>> predicate);
-    public Result<User> Authenticate(string username, string password);
+    Result Add(User user);
+    Result<IQueryable<User>> Get(Expression<Func<User, bool>>? predicate = null);
+    Result<User> GetById(Guid id);
+    Result Update(User user);
+    Result Remove(Expression<Func<User, bool>> predicate);
+    Result<User> Authenticate(string username, string password);
 }

@@ -7,7 +7,7 @@ namespace UI.ObservableModels;
 public partial class ObservableAnswerOption : ObservableObject
 {
     [ObservableProperty]
-    private AnswerOption _model;
+    private Guid _answerOptionId;
 
     [ObservableProperty]
     private string _content;
@@ -15,38 +15,18 @@ public partial class ObservableAnswerOption : ObservableObject
     [ObservableProperty]
     private bool _isTrue;
 
-    [ObservableProperty] 
-    private UserAnswer? _userAnswer;
-
     [ObservableProperty]
     private bool _isChecked;
 
     [ObservableProperty]
     private QuestionType _questionType;
 
-    public ObservableAnswerOption(AnswerOption answerOption, UserAnswer? userAnswer)
+    public ObservableAnswerOption(AnswerOption answerOption, bool isChecked = false)
     {
-        Model = answerOption;
+        AnswerOptionId = answerOption.Id;
         Content = answerOption.Content;
         IsTrue = answerOption.IsTrue;
         QuestionType = answerOption.Question.Type;
-        UserAnswer = userAnswer;
-        IsChecked = userAnswer?.IsSelected ?? false;
+        IsChecked = isChecked;
     }
-
-    public void SaveModel()
-    {
-        Model.Content = Content;
-        Model.IsTrue = IsTrue;
-        Model.UpdatedAt = DateTime.UtcNow;
-        ServiceProvider.AnswerOptionService.Update(Model);
-        if (UserAnswer != null)
-        {
-            UserAnswer.IsSelected = IsChecked;
-            UserAnswer.UpdatedAt = DateTime.UtcNow;
-            ServiceProvider.UserAnswerService.Update(UserAnswer);
-        }
-    }
-
-
 }

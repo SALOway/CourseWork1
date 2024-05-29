@@ -12,7 +12,7 @@ public class Question : BaseEntity
     public QuestionType Type { get; set; } = QuestionType.SingleChoice;
 
     [Range(0, int.MaxValue)]
-    public int GradeValue { get; set; } = 0;
+    public int GradeValue { get; set; }
 
     [Required]
     public Test Test { get; set; } = null!;

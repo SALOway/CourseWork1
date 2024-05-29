@@ -30,7 +30,7 @@ public class Test : BaseEntity
 
     public DateTime? Termin { get; set; }
 
-    public bool HasTimer { get; set; } = false;
+    public bool HasTimeLimit { get; set; } = false;
     public DateTime? TimeLimit { get; set; }
 
     [Required]

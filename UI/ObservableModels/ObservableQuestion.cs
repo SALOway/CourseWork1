@@ -2,10 +2,6 @@
 using Core.Enums;
 using Core.Models;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Windows;
 using UI.Enums;
 
 namespace UI.ObservableModels;
@@ -13,7 +9,7 @@ namespace UI.ObservableModels;
 public partial class ObservableQuestion : ObservableObject
 {
     [ObservableProperty]
-    private Question _model;
+    private Guid _questionId;
 
     [ObservableProperty]
     private string _content;
@@ -32,19 +28,10 @@ public partial class ObservableQuestion : ObservableObject
 
     public ObservableQuestion(Question question)
     {
-        Model = question;
+        QuestionId = question.Id;
         Content = question.Content;
         QuestionType = question.Type;
         GradeValue = question.GradeValue;
-    }
-
-    public void SaveModel()
-    {
-        Model.Content = Content;
-        Model.Type = QuestionType;
-        Model.GradeValue = GradeValue;
-        Model.UpdatedAt = DateTime.UtcNow;
-        ServiceProvider.QuestionService.Update(Model);
     }
 
     partial void OnQuestionTypeChanged(QuestionType value)
