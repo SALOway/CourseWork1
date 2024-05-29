@@ -49,6 +49,9 @@ public class GenericRepository<T>(DbContext dbContext) : IGenericRepository<T> w
                 return Result.Failure("Entity doesn't exist");
             }
 
+            var entityEntry = _dbContext.Entry(entity);
+            entityEntry.State = EntityState.Modified;
+
             _dbContext.Update(entity);
             _dbContext.SaveChanges();
             return Result.Success();
@@ -70,7 +73,11 @@ public class GenericRepository<T>(DbContext dbContext) : IGenericRepository<T> w
                 return Result.Success();
             }
 
-            _dbContext.RemoveRange(query);
+            foreach (var item in query)
+            {
+                _dbContext.RemoveRange(item);
+            }
+
             _dbContext.SaveChanges();
 
             return Result.Success();

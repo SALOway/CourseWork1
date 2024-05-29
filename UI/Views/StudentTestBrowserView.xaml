@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="UI.Views.StudentTestBrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.Views" 
+             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:StudentTestBrowserViewModel}"
+             xmlns:converters="clr-namespace:UI.Convertors"
+             mc:Ignorable="d" 
+             d:DesignHeight="640" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:AttemptStatusToStringConverter x:Key="AttStatToStr"/>
+    </UserControl.Resources>
+    
+    <Grid>
+        <!--Кнопка виходу з аккаунту-->
+        <Button Content="Вйти з аккаунту" Command="{Binding LogOutCommand}" FontSize="24"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
+                <!--Пошукова строка-->
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" FontSize="24"
+                         MinWidth="250" Margin="0,0,5,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <!--Кнопка пошуку-->
+                <Button Content="Пошук" Command="{Binding SearchCommand}" FontSize="24" 
+                        Margin="0,0,5,0" Padding="25,5,25,5"/>
+                <!--Кнопка відкриття деталей-->
+                <Button Content="Відкрити деталі" Command="{Binding OpenDetailsCommand}" FontSize="24"
+                        Padding="25,5,25,5"/>
+            </StackPanel>
+
+            <!--Список відфільтррованих тестів-->
+            <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
+                      FontSize="24"
+                      HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ListView.View>
+                    <GridView>
+                        <!--Назва тесту-->
+                        <GridViewColumn Header="Назва тесту" Width="250">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" FontSize="24" 
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <!--Кількість спроб-->
+                        <GridViewColumn Header="Кількість спроб" Width="250">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding AttemptsRatio}" 
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <!--Строк-->
+                        <GridViewColumn Header="Строк" Width="250">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" 
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                               Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <!--Статус останньої спроби-->
+                        <GridViewColumn Header="Статус останньої спроби" Width="300">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding LastAttemptStatus, Converter={StaticResource AttStatToStr}}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</UserControl>

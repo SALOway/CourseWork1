@@ -14,11 +14,11 @@ public class UserService(IGenericRepository<User> repository) : IUserService
     {
         if (user.Role == UserRole.Student && user.StudentGroup == null)
         {
-            return Result.Failure("A user with the role 'Student' must be associated with a student group");
+            return Result.Failure("Користувач з роллю \"Студент\" має бути пов'язаний з групою");
         }
         else if (user.Role == UserRole.None)
         {
-            return Result.Failure("User's role must be specefied");
+            return Result.Failure("Роль користувача має бути визначеною");
         }
 
         return _repository.Create(user);
@@ -39,14 +39,16 @@ public class UserService(IGenericRepository<User> repository) : IUserService
 
     public Result<User> Authenticate(string username, string password)
     {
-        var getUserResult = _repository.Get(u => u.Username == username && u.Password == password && u.Role != UserRole.None);
+        var getUserResult = _repository.Get(u => u.Username == username
+                                                 && u.Password == password
+                                                 && u.Role != UserRole.None);
         if (!getUserResult.IsSuccess)
         {
             return Result<User>.Failure(getUserResult.AppErrors);
         }
         else if (!getUserResult.Value.Any())
         {
-            return Result<User>.Failure(new AuthenticationError("User with such username or password don't exist. User wasn't authorized"));
+            return Result<User>.Failure(new AuthenticationError("Користувача з такими логіном та паролем не існує"));
         }
 
         return Result<User>.Success(getUserResult.Value.First());

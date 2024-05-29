@@ -5,8 +5,9 @@ namespace BLL.Interfaces;
 
 public interface ITestService
 {
-    public Result Add(Test test);
-    public Result<IQueryable<Test>> Get(Expression<Func<Test, bool>>? predicate = null);
-    public Result Update(Test test);
-    public Result Remove(Expression<Func<Test, bool>> predicate);
+    Result Add(Test test);
+    Result<IQueryable<Test>> Get(Expression<Func<Test, bool>>? predicate = null);
+    Result Update(Test test);
+    Result Remove(Expression<Func<Test, bool>> predicate);
+    Result<IQueryable<Test>> GetTestsByGroup(StudentGroup studentGroup, bool onlyPublic = true);
 }

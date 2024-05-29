@@ -25,4 +25,9 @@ public class AnswerOptionService(IGenericRepository<AnswerOption> answerOptionRe
     {
         return _repository.Remove(predicate);
     }
+
+    public Result<IQueryable<AnswerOption>> GetAllOptionsForQuestion(Question question)
+    {
+        return Get(o => o.Question.Id == question.Id);
+    }
 }

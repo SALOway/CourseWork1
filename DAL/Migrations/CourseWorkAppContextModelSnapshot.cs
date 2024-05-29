@@ -17,7 +17,7 @@ namespace DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -35,7 +35,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -70,7 +70,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("GradeValue")
@@ -104,7 +104,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -137,11 +137,17 @@ namespace DAL.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasDesription")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasRequiredGrade")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("HasTermin")
                         .HasColumnType("bit");
@@ -159,6 +165,9 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RequiredGrade")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -168,7 +177,7 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("Termin")
                         .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("TimeLimit")
+                    b.Property<TimeSpan?>("TimeLimit")
                         .HasColumnType("time");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -192,14 +201,26 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EndedAt")
+                    b.Property<DateTime?>("EndedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("Grade")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("HasGrade")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasLeftoverTime")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<TimeSpan?>("LeftoverTime")
+                        .HasColumnType("time");
 
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("datetime2");
@@ -234,7 +255,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
@@ -287,7 +308,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
@@ -296,7 +317,7 @@ namespace DAL.Migrations
                     b.Property<bool>("IsSelected")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("QuestionId")
+                    b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TestAttemptId")
@@ -305,6 +326,9 @@ namespace DAL.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AnswerOptionId");
@@ -312,6 +336,8 @@ namespace DAL.Migrations
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("TestAttemptId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserAnswers", (string)null);
                 });
@@ -393,9 +419,11 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Models.Question", null)
+                    b.HasOne("Core.Models.Question", "Question")
                         .WithMany("UserAnswers")
-                        .HasForeignKey("QuestionId");
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Core.Models.TestAttempt", "TestAttempt")
                         .WithMany("Answers")
@@ -403,9 +431,19 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AnswerOption");
 
+                    b.Navigation("Question");
+
                     b.Navigation("TestAttempt");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Core.Models.AnswerOption", b =>

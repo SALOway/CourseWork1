@@ -1,0 +1,61 @@
+﻿<Window x:Class="UI.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UI.Views" 
+        xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+        xmlns:selectors="clr-namespace:UI.Selectors"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        WindowState="Maximized">
+    <Window.DataContext>
+        <viewmodels:MainWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <!--View Templates-->
+        <!--Вхід в систему-->
+        <DataTemplate x:Key="LogInTemplate" DataType="{x:Type local:LogInView}">
+            <local:LogInView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Браузер тестів студента-->
+        <DataTemplate x:Key="StudentTestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
+            <local:StudentTestBrowserView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Деталі тесту-->
+        <DataTemplate x:Key="TestDetailsTemplate" DataType="{x:Type local:TestDetailsView}">
+            <local:TestDetailsView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Проходження тесту-->
+        <DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
+            <local:TestAttemptView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Меню вчителя-->
+        <DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
+            <local:TeacherMenuView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Браузер тестів вчителя-->
+        <DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
+            <local:TeacherTestBrowserView IsTabStop="False"/>
+        </DataTemplate>
+        <!--Редактор тестів-->
+        <DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
+            <local:TestEditorView IsTabStop="False"/>
+        </DataTemplate>
+
+        <!--Selectors-->
+        <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
+                                            LogInTemplate="{StaticResource LogInTemplate}"
+                                            StudentTestBrowserTemplate="{StaticResource StudentTestBrowserTemplate}"
+                                            TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
+                                            TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
+                                            TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
+                                            TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
+                                            TestEditorTemplate="{StaticResource TestEditorTemplate}"/>
+    </Window.Resources>
+    <Grid>
+        <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" 
+                        ContentTemplateSelector="{StaticResource AppStateTemplateSelector}" 
+                        IsTabStop="False"/>
+    </Grid>
+</Window>

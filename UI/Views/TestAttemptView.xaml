@@ -1,0 +1,144 @@
+﻿<UserControl x:Class="UI.Views.TestAttemptView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.Views" 
+             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestAttemptViewModel}"
+             xmlns:models="clr-namespace:UI.ObservableModels"
+             xmlns:convertors="clr-namespace:UI.Convertors"
+             xmlns:selectors="clr-namespace:UI.Selectors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!--Сonvertors-->
+        <convertors:QuestionStateToBrushConverter x:Key="QuestionStateToBrush"/>
+        <convertors:IndexToNumberConverter x:Key="IndexToNum"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!--Question template-->
+        <DataTemplate x:Key="QuestionItem" DataType="models:ObservableQuestion">
+            <Border Background="{Binding State, Converter={StaticResource QuestionStateToBrush}}">
+                <Label Content="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem, AncestorLevel=1}, 
+                                         Path=(ItemsControl.AlternationIndex), 
+                                         Converter={StaticResource IndexToNum}}"
+                       ContentStringFormat="Питання #{0}"
+                       FontSize="24">
+                </Label>
+            </Border>
+        </DataTemplate>
+        
+        <!--Option templates-->
+        <DataTemplate x:Key="SingleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="{Binding Content}" FontSize="24"
+                             IsChecked="{Binding IsChecked}" GroupName="Options"
+                             VerticalAlignment="Center" Margin="0,0,10,0"
+                             VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="MultipleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Content="{Binding Content}" FontSize="24"
+                          IsChecked="{Binding IsChecked}"
+                          VerticalAlignment="Center" Margin="0,0,10,0"
+                          VerticalContentAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SingleOptionQuestionOptions">
+            <ItemsControl ItemsSource="{Binding AnswerOptions}"
+                          ItemTemplate="{StaticResource SingleAnswerOptionTemplate}"
+                          VerticalAlignment="Top" Margin="20,0,20,0"
+                          Grid.Row="3"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MultipleOptionQuestionOptions">
+            <ItemsControl ItemsSource="{Binding AnswerOptions}"
+                          ItemTemplate="{StaticResource MultipleAnswerOptionTemplate}"
+                          VerticalAlignment="Top" Margin="20,0,20,0"
+                          Grid.Row="3"/>
+        </DataTemplate>
+
+        <!--Selectors-->
+        <selectors:AnswerOptionTemplateSelector x:Key="AnswerOptionTemplateSelector"
+                                                SingleOptionQuestionOptions="{StaticResource SingleOptionQuestionOptions}"
+                                                MultipleOptionQuestionOptions="{StaticResource MultipleOptionQuestionOptions}"/>
+    </UserControl.Resources>
+    
+    <Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <!--Основна частина-->
+                <ColumnDefinition/>
+                <!--Бокова панель питань-->
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!--Кнопка назад-->
+                <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="10"
+                        Grid.Row="0"/>
+
+                <Label Content="{Binding SelectedQuestionNumber}" ContentStringFormat="Питання #{0}"  FontSize="24"
+                       HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,10,0"
+                       Grid.Row="1"/>
+                <Label Content="{Binding Timeout}" ContentStringFormat="Залишилось часу: {0:hh\:mm\:ss}" FontSize="24"
+                       HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,0,10,0"
+                       Grid.Row="1"
+                       Visibility="{Binding HasTimer, Converter={StaticResource BoolToVis}}"/>
+
+                <Border Grid.Row="2" Padding="25">
+                    <TextBlock Text="{Binding SelectedQuestion.Content}" FontSize="24" TextWrapping="Wrap"
+                               VerticalAlignment="Top" Margin="10,0,10,0"/>
+                </Border>
+                
+                <!--Список з варіантів відповіді-->
+                <ContentControl Content="{Binding SelectedQuestion}" 
+                                ContentTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
+                                VerticalAlignment="Top" Margin="20,0,20,0"
+                                HorizontalContentAlignment="Stretch"
+                                Grid.Row="3"/>
+
+                <!--Кнопки перемикання питання-->
+                <Button Content="Минулий" FontSize="24" Command="{Binding PreviousCommand}"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Padding="25,5,25,5"
+                        Grid.Row="4"
+                        Visibility="{Binding IsSelectedQuestionNotFirst, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Наступний" FontSize="24" Command="{Binding NextCommand}"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Padding="25,5,25,5"
+                        Grid.Row="4"
+                        Visibility="{Binding IsSelectedQuestionNotLast, Converter={StaticResource BoolToVis}}"/>
+            </Grid>
+            
+            <!--Бокова панель питань-->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListView ItemsSource="{Binding TestAttempt.Test.Questions}" 
+                          SelectedItem="{Binding SelectedQuestion}" 
+                          AlternationCount="{Binding TestAttempt.Test.Questions.Count}"
+                          ItemTemplate="{StaticResource QuestionItem}"
+                          SelectionMode="Single" 
+                          HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                          Grid.Row="0"/>
+                <Button Content="Завершити" FontSize="24" Command="{Binding FinishCommand}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="25,5,25,5"
+                        Grid.Row="1"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

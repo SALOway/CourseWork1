@@ -15,7 +15,15 @@ public class TestAttemptService(IGenericRepository<TestAttempt> testAttemptRepos
     }
     public Result<IQueryable<TestAttempt>> Get(Expression<Func<TestAttempt, bool>>? predicate = null)
     {
-        return _repository.Get(predicate);
+        var getTestAttempts = _repository.Get(predicate);
+        if (!getTestAttempts.IsSuccess)
+        {
+            return Result<IQueryable<TestAttempt>>.Failure(getTestAttempts.AppErrors);
+        }
+
+        var query = getTestAttempts.Value;
+        
+        return Result<IQueryable<TestAttempt>>.Success(query.OrderBy(a => a.CreatedAt));
     }
     public Result Update(TestAttempt testAttempt)
     {
@@ -24,5 +32,24 @@ public class TestAttemptService(IGenericRepository<TestAttempt> testAttemptRepos
     public Result Remove(Expression<Func<TestAttempt, bool>> predicate)
     {
         return _repository.Remove(predicate);
+    }
+
+    public Result<TestAttempt?> GetLastAttempt(User user, Test test)
+    {
+        var getAttempts = Get(a => a.Test.Id == test.Id && a.User.Id == user.Id);
+        if (!getAttempts.IsSuccess)
+        {
+            return Result<TestAttempt?>.Failure(getAttempts.AppErrors);
+        }
+
+        var query = getAttempts.Value;
+        if (!query.Any())
+        {
+            return Result<TestAttempt?>.Success(null);
+        }
+
+        var lastAttempt = query.OrderByDescending(a => a.StartedAt).First();
+
+        return Result<TestAttempt?>.Success(lastAttempt);
     }
 }

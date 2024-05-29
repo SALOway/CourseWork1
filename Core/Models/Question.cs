@@ -9,6 +9,7 @@ public class Question : BaseEntity
     public string Content { get; set; } = null!;
     [EnumDataType(typeof(QuestionType))]
     public QuestionType Type { get; set; } = QuestionType.SingleChoice;
+    [Range(0, int.MaxValue)]
     public int GradeValue { get; set; } = 0;
 
     [Required]
