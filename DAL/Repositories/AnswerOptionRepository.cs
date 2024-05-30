@@ -13,6 +13,7 @@ public class AnswerOptionRepository(DbContext dbContext) : GenericRepository<Ans
         {
             IQueryable<AnswerOption> query = _dbContext.Set<AnswerOption>()
                 .Include(o => o.UserAnswers)
+                .Include(o => o.Question)
                 .Where(o => !o.IsDeleted);
             if (expression != null)
             {

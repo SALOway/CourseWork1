@@ -13,6 +13,22 @@ public class TestAttemptService(IGenericRepository<TestAttempt> testAttemptRepos
     {
         return _repository.Create(testAttempt);
     }
+    public Result<TestAttempt> GetById(Guid id)
+    {
+        var getResult = _repository.Get(t => t.Id == id);
+        if (!getResult.IsSuccess || !getResult.Value.Any())
+        {
+            return Result<TestAttempt>.Failure(getResult.AppErrors);
+        }
+
+        var testAttempt = getResult.Value.FirstOrDefault();
+        if (testAttempt == null)
+        {
+            return Result<TestAttempt>.Failure("Спроби тесту з даним id не існує");
+        }
+
+        return Result<TestAttempt>.Success(testAttempt);
+    }
     public Result<IQueryable<TestAttempt>> Get(Expression<Func<TestAttempt, bool>>? predicate = null)
     {
         var getTestAttempts = _repository.Get(predicate);

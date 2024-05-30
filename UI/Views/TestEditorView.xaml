@@ -142,10 +142,16 @@
                                   VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
+                    <!--Має спроби?-->
+                    <CheckBox Content="Має спроби?" IsChecked="{Binding Test.HasAttempts}" FontSize="14"
+                              VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
+                              VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
+
                     <!--Кількість спроб-->
-                    <StackPanel Orientation="Horizontal" 
-                                Margin="0,0,0,10">
-                        <Label Content="Кількість спроб:" FontSize="14" 
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,0,0,10"
+                                Visibility="{Binding Test.HasAttempts, Converter={StaticResource BoolToVis}}">
+                        <Label Content="Кількість спроб:" FontSize="14"
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <custom:IntegerInputBox Text="{Binding Test.MaxAttempts}" FontSize="14" MaxLength="10" MaxLines="1"
                                                 VerticalAlignment="Center" MinWidth="200"/>
@@ -181,12 +187,12 @@
                                     VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!--Має обмж?-->
+                    <!--Має обмеження по часу?-->
                     <CheckBox Content="Має часове обмеження" IsChecked="{Binding Test.HasTimeLimit}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
-                    <!--Обмж-->
+                    <!--Обмеження по часу-->
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
                                 Visibility="{Binding Test.HasTimeLimit, Converter={StaticResource BoolToVis}}">

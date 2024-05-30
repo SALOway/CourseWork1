@@ -81,7 +81,7 @@ public partial class ObservableTest : ObservableObject
         HasTermin = test.HasTermin;
         Termin = test.Termin.HasValue ? test.Termin.Value.ToLocalTime() : test.Termin;
         HasTimeLimit = test.HasTimeLimit;
-        TimeLimit = test.TimeLimit.HasValue ? test.TimeLimit.Value.ToLocalTime() : test.TimeLimit;
+        TimeLimit = test.TimeLimit.HasValue ? test.TimeLimit.Value : test.TimeLimit;
         UpdatedAt = test.UpdatedAt.ToLocalTime();
         StudentGroup = new ObservableStudentGroup(test.StudentGroup);
     }
@@ -116,7 +116,7 @@ public partial class ObservableTest : ObservableObject
         test.HasTermin = HasTermin;
         test.Termin = Termin.HasValue ? Termin.Value.ToUniversalTime() : test.Termin;
         test.HasTimeLimit = HasTimeLimit;
-        test.TimeLimit = TimeLimit.HasValue ? TimeLimit.Value.ToUniversalTime() : test.TimeLimit;
+        test.TimeLimit = TimeLimit.HasValue ? TimeLimit.Value : test.TimeLimit;
         test.StudentGroup = group;
         test.UpdatedAt = DateTime.UtcNow;
 

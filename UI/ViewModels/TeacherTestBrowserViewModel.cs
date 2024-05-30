@@ -100,6 +100,15 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
             return;
         }
 
+        Tests.Add(new ObservableTest(newTest));
+        SelectedTest = Tests.First();
+
+        if (!TryCreateTestAttempt(out var newAttempt))
+        {
+            return;
+        }
+
+        _sessionContext.CurrentTestAttemptId = newAttempt.Id;
         _sessionContext.CurrentTestId = newTest.Id;
         _sessionContext.CurrentState = AppState.TestEditor;
     }
@@ -110,6 +119,25 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
         if (SelectedTest == null)
         {
             return;
+        }
+
+        if (!TryGetTestAttempt(out var attempt))
+        {
+            return;
+        }
+
+        if (attempt == null)
+        {
+            if (!TryCreateTestAttempt(out var newAttempt))
+            {
+                return;
+            }
+
+            _sessionContext.CurrentTestAttemptId = newAttempt.Id;
+        }
+        else
+        {
+            _sessionContext.CurrentTestAttemptId = attempt.Id;
         }
 
         _sessionContext.CurrentTestId = SelectedTest.TestId;
@@ -178,7 +206,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryCreateQuestion(Test test, out Question newQuestion)
     {
         newQuestion = new Question()
@@ -205,7 +232,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryCreateAnswerOptions(Question question, out List<AnswerOption> answerOptions)
     {
         answerOptions =
@@ -234,7 +260,35 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
+    private bool TryCreateTestAttempt(out TestAttempt testAttempt)
+    {
+        testAttempt = null!;
+        if (!TryGetCurrentUser(out var user))
+        {
+            return false;
+        }
 
+        if (!TryGetCurrentTest(out var test))
+        {
+            return false;
+        }
+
+        testAttempt = new TestAttempt()
+        {
+            User = user,
+            Test = test,
+            Status = TestAttemptStatus.InProcess,
+        };
+
+        var add = _testAttemptService.Add(testAttempt);
+        if (!add.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + add.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        return true;
+    }
     private bool TryGetAnyFirstGroup(out StudentGroup studentGroup)
     {
         studentGroup = null!;
@@ -257,7 +311,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetCurrentUser(out User user)
     {
         user = null!;
@@ -290,7 +343,50 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
+    private bool TryGetCurrentTest(out Test test)
+    {
+        test = null!;
 
+        var getTest = _testService.GetById(SelectedTest!.TestId);
+        if (!getTest.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        test = getTest.Value;
+        return true;
+    }
+    private bool TryGetTestAttempt(out TestAttempt? attempt)
+    {
+        attempt = null!;
+
+        var get = _testAttemptService.Get(a => a.User.Id == _sessionContext.CurrentUserId!.Value && a.Test.Id == SelectedTest!.TestId);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        attempt = get.Value.FirstOrDefault();
+        return true;
+    }
+    private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
+    {
+        userAnswer = null!;
+
+        var getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
+
+        if (!getUserAnswers.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getUserAnswers.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        userAnswer = getUserAnswers.Value.FirstOrDefault();
+
+        return true;
+    }
     private bool TryGetObservableTests(out ObservableCollection<ObservableTest> observableTests)
     {
         observableTests = [];
@@ -320,7 +416,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetObservableQuestions(Test test, out ObservableCollection<ObservableQuestion> observableQuestions)
     {
         observableQuestions = [];
@@ -350,7 +445,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetObservableAnswerOptions(Question question, out ObservableCollection<ObservableAnswerOption> observableAnswerOptions)
     {
         observableAnswerOptions = [];
@@ -376,23 +470,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
             observableAnswerOptions.Add(observableAnswerOption);
         }
-
-        return true;
-    }
-
-    private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
-    {
-        userAnswer = null!;
-
-        var getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
-
-        if (!getUserAnswers.IsSuccess)
-        {
-            MessageBox.Show("Виникла критична помилка\n" + getUserAnswers.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-            return false;
-        }
-
-        userAnswer = getUserAnswers.Value.FirstOrDefault();
 
         return true;
     }

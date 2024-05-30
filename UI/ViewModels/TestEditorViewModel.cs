@@ -138,8 +138,7 @@ public partial class TestEditorViewModel : ObservableObject
             question.Save(_questionService);
             foreach (var answerOption in question.AnswerOptions)
             {
-                answerOption.IsTrue = answerOption.IsChecked;
-                answerOption.Save(_answerOptionService);
+                SaveAnswerOption(answerOption);
             }
         }
 
@@ -311,7 +310,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryCreateObservableAnswerOption(out ObservableAnswerOption observableAnswerOption)
     {
         observableAnswerOption = null!;
@@ -338,7 +336,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetCurrentUser(out User user)
     {
         user = null!;
@@ -371,7 +368,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetSelectedQuestion(out Question question)
     {
         question = null!;
@@ -387,7 +383,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
     {
         userAnswer = null!;
@@ -402,21 +397,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         userAnswer = getUserAnswers.Value.FirstOrDefault();
 
-        return true;
-    }
-
-    private bool TryGetCurrentTest(out Test test)
-    {
-        test = null!;
-
-        var getTest = _testService.GetById(_sessionContext.CurrentTestId!.Value);
-        if (!getTest.IsSuccess)
-        {
-            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-            return false;
-        }
-
-        test = getTest.Value;
         return true;
     }
     private bool TryGetObservableStudentGroups(out ObservableCollection<ObservableStudentGroup> observableStudentGroups)
@@ -441,7 +421,6 @@ public partial class TestEditorViewModel : ObservableObject
         observableStudentGroups = new ObservableCollection<ObservableStudentGroup>(studentGroups.Select(g => new ObservableStudentGroup(g)));
         return true;
     }
-
     private bool TryGetObservableTest(out ObservableTest observableTest)
     {
         observableTest = null!;
@@ -465,7 +444,6 @@ public partial class TestEditorViewModel : ObservableObject
         observableTest.Questions = observableQuestions;
         return true;
     }
-
     private bool TryGetObservableQuestions(Test test, out ObservableCollection<ObservableQuestion> observableQuestions)
     {
         observableQuestions = [];
@@ -495,7 +473,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         return true;
     }
-
     private bool TryGetObservableAnswerOptions(Question question, out ObservableCollection<ObservableAnswerOption> observableAnswerOptions)
     {
         observableAnswerOptions = [];
@@ -524,5 +501,61 @@ public partial class TestEditorViewModel : ObservableObject
 
         return true;
     }
+    private void SaveAnswerOption(ObservableAnswerOption observableAnswerOption)
+    {
+        var getAnswerOption = _answerOptionService.GetById(observableAnswerOption.AnswerOptionId);
+        if (!getAnswerOption.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
 
+        observableAnswerOption.IsTrue = observableAnswerOption.IsChecked;
+        observableAnswerOption.Save(_answerOptionService);
+
+        var answerOption = getAnswerOption.Value;
+
+        if (!TryGetUserAnswer(answerOption, out var userAnswer))
+        {
+            return;
+        }
+
+        if (userAnswer == null)
+        {
+            // null exeption for Id of question
+            var getQuestion = _questionService.GetById(answerOption.Question.Id);
+            if (!getQuestion.IsSuccess)
+            {
+                MessageBox.Show("Виникла критична помилка\n" + getQuestion.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var question = getQuestion.Value;
+
+            var getTestAttempt = _testAttemptService.GetById(_sessionContext.CurrentTestAttemptId!.Value);
+            if (!getTestAttempt.IsSuccess)
+            {
+                MessageBox.Show("Виникла критична помилка\n" + getTestAttempt.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var testAttempt = getTestAttempt.Value;
+
+            var newUserAnswer = new UserAnswer()
+            {
+                AnswerOption = answerOption,
+                Question = question,
+                TestAttempt = testAttempt,
+                IsSelected = observableAnswerOption.IsChecked,
+                User = testAttempt.User
+            };
+
+            var create = _userAnswerService.Add(newUserAnswer);
+            if (!create.IsSuccess)
+            {
+                MessageBox.Show("Виникла критична помилка\n" + create.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+    }
 }
