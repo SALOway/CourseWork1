@@ -29,9 +29,9 @@
         </DataTemplate>
         
         <!--Проходження тесту-->
-        <!--<DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
+        <DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
             <local:TestAttemptView IsTabStop="False"/>
-        </DataTemplate>-->
+        </DataTemplate>
         
         <!--Меню вчителя-->
         <DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
@@ -53,11 +53,10 @@
                                             LogInTemplate="{StaticResource LogInTemplate}"
                                             StudentTestBrowserTemplate="{StaticResource StudentTestBrowserTemplate}"
                                             TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
-                                            
+                                            TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
                                             TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
                                             TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
                                             TestEditorTemplate="{StaticResource TestEditorTemplate}"/>
-        <!--TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"-->
     </Window.Resources>
     <Grid>
         <ContentControl Content="{Binding CurrentState}" 

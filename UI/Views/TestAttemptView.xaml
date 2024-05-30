@@ -4,21 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UI.Views" 
-             xmlns:viewmodels="clr-namespace:UI.ViewModels"
+             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestAttemptViewModel}"
              xmlns:models="clr-namespace:UI.ObservableModels"
              xmlns:converters="clr-namespace:UI.Converters"
              xmlns:selectors="clr-namespace:UI.Selectors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <!--d:DataContext="{d:DesignInstance Type=viewmodels:TestAttemptViewModel}"-->
     <UserControl.Resources>
         <!--Сonvertors-->
-        <!--<converters:QuestionStateToBrushConverter x:Key="QuestionStateToBrush"/>
+        <converters:QuestionStateToBrushConverter x:Key="QuestionStateToBrush"/>
         <converters:IndexToNumberConverter x:Key="IndexToNum"/>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>-->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
         <!--Question template-->
-        <!--<DataTemplate x:Key="QuestionItem" DataType="models:ObservableQuestion">
+        <DataTemplate x:Key="QuestionItem" DataType="models:ObservableQuestion">
             <Border Background="{Binding State, Converter={StaticResource QuestionStateToBrush}}">
                 <Label Content="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem, AncestorLevel=1}, 
                                          Path=(ItemsControl.AlternationIndex), 
@@ -27,10 +26,10 @@
                        FontSize="24">
                 </Label>
             </Border>
-        </DataTemplate>-->
+        </DataTemplate>
         
         <!--Option templates-->
-        <!--<DataTemplate x:Key="SingleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
+        <DataTemplate x:Key="SingleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
             <StackPanel Orientation="Horizontal">
                 <RadioButton Content="{Binding Content}" FontSize="24"
                              IsChecked="{Binding IsChecked}" GroupName="Options"
@@ -60,21 +59,21 @@
                           ItemTemplate="{StaticResource MultipleAnswerOptionTemplate}"
                           VerticalAlignment="Top" Margin="20,0,20,0"
                           Grid.Row="3"/>
-        </DataTemplate>-->
+        </DataTemplate>
 
         <!--Selectors-->
-        <!--<selectors:AnswerOptionTemplateSelector x:Key="AnswerOptionTemplateSelector"
+        <selectors:AnswerOptionTemplateSelector x:Key="AnswerOptionTemplateSelector"
                                                 SingleOptionQuestionOptions="{StaticResource SingleOptionQuestionOptions}"
-                                                MultipleOptionQuestionOptions="{StaticResource MultipleOptionQuestionOptions}"/>-->
+                                                MultipleOptionQuestionOptions="{StaticResource MultipleOptionQuestionOptions}"/>
     </UserControl.Resources>
     
     <Grid>
 
-        <!--<Grid>
+        <Grid>
             <Grid.ColumnDefinitions>
-                --><!--Основна частина--><!--
+                <!--Основна частина-->
                 <ColumnDefinition/>
-                --><!--Бокова панель питань--><!--
+                <!--Бокова панель питань-->
                 <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
 
@@ -87,7 +86,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                --><!--Кнопка назад--><!--
+                <!--Кнопка назад-->
                 <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
                         HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="10"
                         Grid.Row="0"/>
@@ -105,14 +104,14 @@
                                VerticalAlignment="Top" Margin="10,0,10,0"/>
                 </Border>
                 
-                --><!--Список з варіантів відповіді--><!--
+                <!--Список з варіантів відповіді-->
                 <ContentControl Content="{Binding SelectedQuestion}" 
                                 ContentTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
                                 VerticalAlignment="Top" Margin="20,0,20,0"
                                 HorizontalContentAlignment="Stretch"
                                 Grid.Row="3"/>
 
-                --><!--Кнопки перемикання питання--><!--
+                <!--Кнопки перемикання питання-->
                 <Button Content="Минулий" FontSize="24" Command="{Binding PreviousCommand}"
                         HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Padding="25,5,25,5"
                         Grid.Row="4"
@@ -123,7 +122,7 @@
                         Visibility="{Binding IsSelectedQuestionNotLast, Converter={StaticResource BoolToVis}}"/>
             </Grid>
             
-            --><!--Бокова панель питань--><!--
+            <!--Бокова панель питань-->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -140,6 +139,6 @@
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="25,5,25,5"
                         Grid.Row="1"/>
             </Grid>
-        </Grid>-->
+        </Grid>
     </Grid>
 </UserControl>

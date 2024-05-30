@@ -13,6 +13,22 @@ public class UserAnswerService(IGenericRepository<UserAnswer> userAnswerReposito
     {
         return _repository.Create(userAnswer);
     }
+    public Result<UserAnswer> GetById(Guid id)
+    {
+        var getResult = _repository.Get(u => u.Id == id);
+        if (!getResult.IsSuccess)
+        {
+            return Result<UserAnswer>.Failure(getResult.AppErrors);
+        }
+
+        var userAnswer = getResult.Value.FirstOrDefault();
+        if (userAnswer == null)
+        {
+            return Result<UserAnswer>.Failure("Відповіді користувача з даним id не існує");
+        }
+
+        return Result<UserAnswer>.Success(userAnswer);
+    }
     public Result<IQueryable<UserAnswer>> Get(Expression<Func<UserAnswer, bool>>? predicate = null)
     {
         return _repository.Get(predicate);

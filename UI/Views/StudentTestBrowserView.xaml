@@ -43,7 +43,8 @@
 
             <!--Список відфільтррованих тестів-->
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
-                      FontSize="24">
+                      FontSize="24"
+                      Visibility="{Binding AnyTest, Converter={StaticResource BoolToVis}}">
                 <ListView.View>
                     <GridView>
                         <!--Назва тесту-->
@@ -59,7 +60,8 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding AttemptsRatio}" FontSize="24"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Visibility="{Binding HasAttempts, Converter={StaticResource BoolToVis}}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

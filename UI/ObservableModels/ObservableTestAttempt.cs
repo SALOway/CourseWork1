@@ -1,6 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Core.Enums;
 using Core.Models;
+using System.Windows;
 
 namespace UI.ObservableModels;
 
@@ -10,7 +12,7 @@ public partial class ObservableTestAttempt : ObservableObject
     private Guid _testAttemptId;
 
     [ObservableProperty]
-    private ObservableTest _test;
+    private ObservableTest? _test;
 
     [ObservableProperty]
     private DateTime _startedAt;
@@ -48,50 +50,76 @@ public partial class ObservableTestAttempt : ObservableObject
         Status = testAttempt.Status;
         HasGrade = testAttempt.HasGrade;
         Grade = testAttempt.Grade;
-        Test = new ObservableTest(testAttempt.Test);
         AmountOfAnsweredQuestions = testAttempt.Answers.Select(a => a.Question.Id).ToHashSet().Count;
     }
 
-    //public void SaveModel()
-    //{
-    //    Model.Status = Status;
-    //    Model.EndedAt = EndedAt;
-    //    Model.HasGrade = HasGrade;
-    //    if (Model.HasGrade)
-    //    {
-    //        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == Model.Test.Id);
-    //        var questions = getQuestions.Value;
-    //        var grade = 0;
-    //        foreach (var question in questions)
-    //        {
-    //            var debug = question.UserAnswers.Where(a => a.TestAttempt.Id == Model.Id).ToList();
-    //            var userAnswers = question.UserAnswers.Where(a => a.TestAttempt.Id == Model.Id)
-    //                                                  .ToDictionary(a => a.AnswerOption.Id, a => a.IsSelected);
+    public void Save(ITestAttemptService testAttemptService, IQuestionService questionService)
+    {
+        var get = testAttemptService.GetById(TestAttemptId);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
 
-    //            bool answerIsRight = true;
-    //            foreach (var answerOption in question.AnswerOptions)
-    //            {
-    //                if (answerOption.IsTrue != userAnswers[answerOption.Id])
-    //                {
-    //                    answerIsRight = false;
-    //                    break;
-    //                }
-    //            }
+        var testAttempt = get.Value;
 
-    //            if (answerIsRight)
-    //            {
-    //                grade += question.GradeValue;
-    //            }
-    //        }
-    //        Grade = grade;
-    //        Model.Grade = Grade;
-    //    }
-    //    Model.HasLeftoverTime = HasLeftoverTime;
-    //    if (Model.HasLeftoverTime)
-    //    {
-    //        Model.LeftoverTime = LeftoverTime;
-    //    }
-    //    Model.UpdatedAt = DateTime.UtcNow;
-    //    ServiceProvider.TestAttemptService.Update(Model);
-    //}
+        testAttempt.Status = Status;
+        testAttempt.EndedAt = EndedAt;
+        testAttempt.HasGrade = HasGrade;
+
+        
+
+        if (testAttempt.HasGrade)
+        {
+            var getQuestions = questionService.Get(q => q.Test.Id == testAttempt.Test.Id);
+            if (!getQuestions.IsSuccess)
+            {
+                MessageBox.Show("Виникла критична помилка\n" + getQuestions.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var questions = getQuestions.Value;
+
+            int grade = 0;
+            foreach (var question in questions)
+            {
+                var userAnswers = question.UserAnswers.Where(a => a.TestAttempt.Id == testAttempt.Id)
+                                                      .ToDictionary(a => a.AnswerOption.Id, a => a.IsSelected);
+
+                bool answerIsRight = true;
+                foreach (var answerOption in question.AnswerOptions)
+                {
+                    if (answerOption.IsTrue != userAnswers[answerOption.Id])
+                    {
+                        answerIsRight = false;
+                        break;
+                    }
+                }
+
+                if (answerIsRight)
+                {
+                    grade += question.GradeValue;
+                }
+            }
+            Grade = grade;
+            testAttempt.Grade = Grade;
+        }
+
+        testAttempt.HasLeftoverTime = HasLeftoverTime;
+
+        if (testAttempt.HasLeftoverTime)
+        {
+            testAttempt.LeftoverTime = LeftoverTime;
+        }
+
+        testAttempt.UpdatedAt = DateTime.UtcNow;
+
+        var update = testAttemptService.Update(testAttempt);
+        if (!update.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + update.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+    }
 }

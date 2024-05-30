@@ -1,251 +1,372 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core.Enums;
 using Core.Models;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using UI.Enums;
+using UI.Interfaces;
 using UI.ObservableModels;
 
 namespace UI.ViewModels;
 
-//public partial class TestAttemptViewModel : ObservableObject
-//{
-//    private readonly DispatcherTimer? _timer;
+public partial class TestAttemptViewModel : ObservableObject
+{
+    private readonly ISessionContext _sessionContext;
+    private readonly IUserService _userService;
+    private readonly ITestService _testService;
+    private readonly IQuestionService _questionService;
+    private readonly IAnswerOptionService _answerOptionService;
+    private readonly IUserAnswerService _userAnswerService;
+    private readonly ITestAttemptService _testAttemptService;
 
-//    [ObservableProperty]
-//    private ObservableTestAttempt _testAttempt;
+    private readonly DispatcherTimer? _timer;
 
-//    [ObservableProperty]
-//    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotFirst))]
-//    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotLast))]
-//    [NotifyPropertyChangedFor(nameof(SelectedQuestionNumber))]
-//    private ObservableQuestion? _selectedQuestion;
+    [ObservableProperty]
+    private ObservableTestAttempt _testAttempt;
 
-//    [ObservableProperty]
-//    private bool _hasTimer;
-//    [ObservableProperty]
-//    private TimeSpan? _timeout;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotFirst))]
+    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotLast))]
+    [NotifyPropertyChangedFor(nameof(SelectedQuestionNumber))]
+    private ObservableQuestion? _selectedQuestion;
 
-//    public TestAttemptViewModel()
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    [ObservableProperty]
+    private bool _hasTimer;
+    [ObservableProperty]
+    private TimeSpan? _timeout;
 
-//        var testAttempt = context.CurrentTestAttempt!;
-//        var user = context.CurrentUser!;
-//        TestAttempt = new ObservableTestAttempt(testAttempt);
+    public TestAttemptViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService, ITestAttemptService testAttemptService)
+    {
+        _sessionContext = sessionContext;
+        _userService = userService;
+        _testService = testService;
+        _questionService = questionService;
+        _answerOptionService = answerOptionService;
+        _userAnswerService = userAnswerService;
+        _testAttemptService = testAttemptService;
 
-//        var getTests = ServiceProvider.TestService.Get(t => t.Id == testAttempt.Test.Id);
-//        if (!getTests.IsSuccess)
-//        {
-//            MessageBox.Show("Виникла помилка при спробі отримати тест");
-//            Trace.WriteLine(getTests.ErrorMessage);
-//            return;
-//        }
+        if (!TryGetCurrentObservableTestAttempt(out var observableTestAttempt))
+        {
+            TestAttempt = null!;
+            _sessionContext.CurrentTestAttemptId = null;
+            _sessionContext.CurrentState = AppState.TestDetails;
+            return;
+        }
 
-//        var test = getTests.Value.First();
+        TestAttempt = observableTestAttempt;
 
-//        TestAttempt.Test = new ObservableTest(test);
+        SelectedQuestion = TestAttempt.Test!.Questions.FirstOrDefault();
 
-//        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
-//        if (!getQuestions.IsSuccess)
-//        {
-//            MessageBox.Show(getQuestions.ErrorMessage);
-//            return;
-//        }
+        if (TestAttempt.Test.HasTimeLimit)
+        {
+            HasTimer = true;
+            var timePastFromStart = DateTime.Now - TestAttempt.StartedAt;
+            Timeout = (TestAttempt.Test!.TimeLimit!.Value - timePastFromStart).TimeOfDay;
+            _timer = new DispatcherTimer();
+            _timer.Tick += Timer_Tick;
+            _timer.Interval = TimeSpan.FromMilliseconds(100);
+            _timer.Start();
+        }
+    }
 
-//        var questions = getQuestions.Value.ToList();
-
-//        foreach (var question in questions)
-//        {
-//            var observableQuestion = new ObservableQuestion(question);
-
-//            var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
-//            if (!getAnswerOption.IsSuccess)
-//            {
-//                MessageBox.Show(getAnswerOption.ErrorMessage);
-//                return;
-//            }
-
-//            var answerOptions = getAnswerOption.Value.ToList();
-
-//            foreach (var answerOption in answerOptions)
-//            {
-//                var getUserAnswers = ServiceProvider.UserAnswerService.Get(a => a.User.Id == user.Id && a.AnswerOption.Id == answerOption.Id);
-//                if (!getUserAnswers.IsSuccess)
-//                {
-//                    MessageBox.Show(getUserAnswers.ErrorMessage);
-//                    return;
-//                }
-
-//                var userAnswer = getUserAnswers.Value.FirstOrDefault();
-
-//                ObservableAnswerOption observableAnswerOption;
-//                if (userAnswer == null)
-//                {
-//                    var newUserAnswer = new UserAnswer()
-//                    {
-//                        TestAttempt = TestAttempt.Model,
-//                        AnswerOption = answerOption,
-//                        User = user,
-//                        Question = question,
-//                    };
-
-//                    var add = ServiceProvider.UserAnswerService.Add(newUserAnswer);
-//                    if (!add.IsSuccess)
-//                    {
-//                        MessageBox.Show("Не вдалося додати відповідь користувача");
-//                        Trace.WriteLine(add.ErrorMessage);
-//                    }
-
-//                    observableAnswerOption = new ObservableAnswerOption(answerOption, newUserAnswer);
-//                }
-//                else
-//                {
-//                    observableAnswerOption = new ObservableAnswerOption(answerOption, userAnswer);
-//                }
-
-//                observableQuestion.AnswerOptions.Add(observableAnswerOption);
-//            }
-
-//            TestAttempt.Test.Questions.Add(observableQuestion);
-//        }
-
-//        SelectedQuestion = TestAttempt.Test.Questions.FirstOrDefault();
-
-//        if (TestAttempt.Test.HasTimer)
-//        {
-//            HasTimer = true;
-//            Timeout = TestAttempt.Test.TimeLimit;
-//            _timer = new DispatcherTimer();
-//            _timer.Tick += Timer_Tick;
-//            _timer.Interval = TimeSpan.FromMilliseconds(100);
-//            _timer.Start();
-//        }
-//    }
-
-//    public int SelectedQuestionNumber => SelectedQuestion != null ? TestAttempt.Test.Questions.IndexOf(SelectedQuestion) + 1 : 0;
-//    public bool IsSelectedQuestionFirst => SelectedQuestion != null && TestAttempt.Test.Questions.IndexOf(SelectedQuestion) == 0;
-//    public bool IsSelectedQuestionLast => SelectedQuestion != null && TestAttempt.Test.Questions.IndexOf(SelectedQuestion) + 1 == TestAttempt.Test.Questions.Count;
-//    public bool IsSelectedQuestionNotFirst => !IsSelectedQuestionFirst;
-//    public bool IsSelectedQuestionNotLast => !IsSelectedQuestionLast;
+    public int SelectedQuestionNumber => SelectedQuestion != null ? TestAttempt.Test!.Questions.IndexOf(SelectedQuestion) + 1 : 0;
+    public bool IsSelectedQuestionFirst => SelectedQuestion != null && TestAttempt.Test!.Questions.IndexOf(SelectedQuestion) == 0;
+    public bool IsSelectedQuestionLast => SelectedQuestion != null && TestAttempt.Test!.Questions.IndexOf(SelectedQuestion) + 1 == TestAttempt.Test.Questions.Count;
+    public bool IsSelectedQuestionNotFirst => !IsSelectedQuestionFirst;
+    public bool IsSelectedQuestionNotLast => !IsSelectedQuestionLast;
 
 
-//    [RelayCommand]
-//    private void Back()
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    [RelayCommand]
+    private void Back()
+    {
+        _timer?.Stop();
+        Save();
+        _sessionContext.CurrentTestAttemptId = null;
+        _sessionContext.CurrentState = AppState.TestDetails;
+    }
 
-//        _timer?.Stop();
-//        Save();
-//        context.CurrentTestAttempt = null;
-//        context.CurrentState = AppState.TestDetails;
-//    }
+    [RelayCommand]
+    private void Next()
+    {
+        if (SelectedQuestion == null)
+        {
+            SelectedQuestion = TestAttempt.Test!.Questions.First();
+            return;
+        }
 
-//    [RelayCommand]
-//    private void Next()
-//    {
-//        if (SelectedQuestion == null)
-//        {
-//            SelectedQuestion = TestAttempt.Test.Questions.First();
-//            return;
-//        }
+        SelectedQuestion = TestAttempt.Test!.Questions[TestAttempt.Test.Questions.IndexOf(SelectedQuestion) + 1];
+    }
 
-//        SelectedQuestion = TestAttempt.Test.Questions[TestAttempt.Test.Questions.IndexOf(SelectedQuestion) + 1];
-//    }
+    [RelayCommand]
+    private void Previous()
+    {
+        if (SelectedQuestion == null)
+        {
+            SelectedQuestion = TestAttempt.Test!.Questions.First();
+            return;
+        }
 
-//    [RelayCommand]
-//    private void Previous()
-//    {
-//        if (SelectedQuestion == null)
-//        {
-//            SelectedQuestion = TestAttempt.Test.Questions.First();
-//            return;
-//        }
+        SelectedQuestion = TestAttempt.Test!.Questions[TestAttempt.Test.Questions.IndexOf(SelectedQuestion) - 1];
+    }
 
-//        SelectedQuestion = TestAttempt.Test.Questions[TestAttempt.Test.Questions.IndexOf(SelectedQuestion) - 1];
-//    }
+    [RelayCommand]
+    private void Finish()
+    {
+        MessageBoxResult answer;
+        if (TestAttempt.Test!.Questions.Any(q => q.State == QuestionState.None) || !SelectedQuestion!.AnswerOptions.Any(o => o.IsChecked))
+        {
+            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест? На деякі питання не було надано відповіді", "Завершити тест?", MessageBoxButton.YesNo);
+            if (answer == MessageBoxResult.No)
+            {
+                return;
+            }
+        }
 
-//    [RelayCommand]
-//    private void Finish()
-//    {
-//        MessageBoxResult answer;
-//        if (TestAttempt.Test.Questions.Any(q => q.State == QuestionState.None) || !SelectedQuestion!.AnswerOptions.Any(o => o.IsChecked))
-//        {
-//            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест? На деякі питання не було надано відповіді", "Завершити тест?", MessageBoxButton.YesNo);
-//            if (answer == MessageBoxResult.No)
-//            {
-//                return;
-//            }
-//        }
+        answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест?", "Завершити тест?", MessageBoxButton.YesNo);
+        if (answer == MessageBoxResult.No)
+        {
+            return;
+        }
 
-//        answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест?", "Завершити тест?", MessageBoxButton.YesNo);
-//        if (answer == MessageBoxResult.No)
-//        {
-//            return;
-//        }
+        _timer?.Stop();
+        TestAttempt.EndedAt = DateTime.UtcNow;
+        TestAttempt.Status = TestAttemptStatus.Completed;
+        TestAttempt.HasGrade = true;
+        Save();
 
-//        _timer?.Stop();
-//        TestAttempt.EndedAt = DateTime.UtcNow;
-//        TestAttempt.Status = TestAttemptStatus.Completed;
-//        TestAttempt.HasGrade = true;
-//        Save();
+        _sessionContext.CurrentTestAttemptId = null;
+        _sessionContext.CurrentState = AppState.TestDetails;
+    }
 
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-//        context.CurrentTestAttempt = null;
-//        context.CurrentState = AppState.TestDetails;
-//    }
+    partial void OnSelectedQuestionChanged(ObservableQuestion? oldValue, ObservableQuestion? newValue)
+    {
+        if (oldValue != null)
+        {
+            if (oldValue.AnswerOptions.Any(o => o.IsChecked))
+            {
+                oldValue.State = QuestionState.Answered;
+            }
+            else
+            {
+                oldValue.State = QuestionState.None;
+            }
+        }
 
-//    partial void OnSelectedQuestionChanged(ObservableQuestion? oldValue, ObservableQuestion? newValue)
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-//        if (oldValue != null)
-//        {
-//            if (oldValue.AnswerOptions.Any(o => o.IsChecked))
-//            {
-//                oldValue.State = QuestionState.Answered;
-//            }
-//            else
-//            {
-//                oldValue.State = QuestionState.None;
-//            }
-//        }
+        if (newValue != null)
+        {
+            newValue.State = QuestionState.Selected;
+        }
+    }
 
-//        if (newValue != null)
-//        {
-//            newValue.State = QuestionState.Selected;
-//        }
-//    }
+    private void Timer_Tick(object? sender, EventArgs e)
+    {
+        var timePastFromStart = DateTime.Now - TestAttempt.StartedAt;
+        Timeout = (TestAttempt.Test!.TimeLimit!.Value - timePastFromStart).TimeOfDay;
+        if (Timeout <= TimeSpan.Zero)
+        {
+            Timeout = TimeSpan.Zero;
+            _timer!.Stop();
+        }
+    }
 
-//    private void Timer_Tick(object? sender, EventArgs e)
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    private void Save()
+    {
+        if (TestAttempt.Status == TestAttemptStatus.Completed && TestAttempt.Test!.HasTimeLimit && Timeout > TimeSpan.Zero)
+        {
+            TestAttempt.HasLeftoverTime = true;
+            TestAttempt.LeftoverTime = new DateTime() + Timeout;
+        }
 
-//        Timeout = TestAttempt.Test.TimeLimit - (DateTime.UtcNow - context.CurrentTestAttempt!.StartedAt);
-//        if (Timeout <= TimeSpan.Zero)
-//        {
-//            Timeout = TimeSpan.Zero;
-//            _timer!.Stop();
-//        }
-//    }
+        TestAttempt.Save(_testAttemptService, _questionService);
+        foreach (var observableQuestion in TestAttempt.Test!.Questions)
+        {
+            foreach (var observableAnswerOption in observableQuestion.AnswerOptions)
+            {
+                var get = _answerOptionService.GetById(observableAnswerOption.AnswerOptionId);
+                if (!get.IsSuccess)
+                {
+                    MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-//    private void Save()
-//    {
-//        if (TestAttempt.Status == TestAttemptStatus.Completed && TestAttempt.Test.HasTimer && Timeout > TimeSpan.Zero)
-//        {
-//            TestAttempt.HasLeftoverTime = true;
-//            TestAttempt.LeftoverTime = Timeout;
-//        }
-//        TestAttempt.SaveModel();
-//        foreach (var question in TestAttempt.Test.Questions)
-//        {
-//            question.SaveModel();
+                var answerOption = get.Value;
 
-//            foreach (var answerOption in question.AnswerOptions)
-//            {
-//                answerOption.SaveModel();
-//            }
-//        }
-//    }
-//}
+                // Get user answer (return if error)
+                if (!TryGetUserAnswer(answerOption, out var userAnswer))
+                {
+                    return;
+                }
+
+                if (userAnswer == null && !TryCreateUserAnswer(answerOption, observableAnswerOption.IsChecked))
+                {
+                    // If user answer is null, create new user answer (return if error)
+                    return;
+                }
+                else if (userAnswer != null)
+                {
+                    // If user answer is not null, set user answer IsSelected to observableAnswerOption.IsChecked
+                    userAnswer.IsSelected = observableAnswerOption.IsChecked;
+
+                    // update userAnswer
+                    var update = _userAnswerService.Update(userAnswer);
+                    if (!update.IsSuccess)
+                    {
+                        MessageBox.Show("Виникла критична помилка\n" + update.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+    }
+
+    private bool TryCreateUserAnswer(AnswerOption answerOption, bool isChecked)
+    {
+        if (!TryGetCurrentTestAttempt(out var testAttempt))
+        {
+            return false;
+        }
+
+        var userAnswer = new UserAnswer()
+        {
+            TestAttempt = testAttempt,
+            User = testAttempt.User,
+            Question = answerOption.Question,
+            AnswerOption = answerOption,
+            IsSelected = isChecked
+        };
+
+        var create = _userAnswerService.Add(userAnswer);
+        if (!create.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + create.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        return true;
+    }
+    private bool TryGetCurrentObservableTestAttempt(out ObservableTestAttempt observableTestAttempt)
+    {
+        observableTestAttempt = null!;
+
+        if (!TryGetCurrentTestAttempt(out var testAttempt)
+            || !TryGetCurrentTest(out var test)
+            || !TryGetQuestions(test, out var questions))
+        {
+            return false;
+        }
+
+        observableTestAttempt = new ObservableTestAttempt(testAttempt)
+        {
+            Test = new ObservableTest(test)
+        };
+
+        foreach (var question in questions)
+        {
+            var observableQuestion = new ObservableQuestion(question);
+
+            if (!TryGetAnswerOptions(question, out var answerOptions))
+            {
+                return false;
+            }
+
+            foreach (var answerOption in answerOptions)
+            {
+                if (!TryGetUserAnswer(answerOption, out var userAnswer))
+                {
+                    return false;
+                }
+
+                var observableAnswerOption = new ObservableAnswerOption(answerOption);
+                if (userAnswer == null)
+                {
+                    observableAnswerOption.IsChecked = false;
+                }
+                else
+                {
+                    if (observableQuestion.State != QuestionState.Answered)
+                    {
+                        observableQuestion.State = userAnswer.IsSelected ? QuestionState.Answered : QuestionState.None;
+                    }
+
+                    observableAnswerOption.IsChecked = userAnswer.IsSelected;
+                }
+
+                observableQuestion.AnswerOptions.Add(observableAnswerOption);
+            }
+
+            observableTestAttempt.Test.Questions.Add(observableQuestion);
+        }
+
+        return true;
+    }
+    private bool TryGetCurrentTestAttempt(out TestAttempt testAttempt)
+    {
+        testAttempt = null!;
+
+        var get = _testAttemptService.GetById(_sessionContext.CurrentTestAttemptId!.Value);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        testAttempt = get.Value;
+        return true;
+    }
+    private bool TryGetCurrentTest(out Test test)
+    {
+        test = null!;
+
+        var get = _testService.GetById(_sessionContext.CurrentTestId!.Value);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        test = get.Value;
+        return true;
+    }
+    private bool TryGetQuestions(Test test, out List<Question> questions)
+    {
+        questions = [];
+
+        var get = _questionService.Get(q => q.Test.Id == test.Id);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        questions = get.Value.ToList();
+        return true;
+    }
+    private bool TryGetAnswerOptions(Question question, out List<AnswerOption> answerOptions)
+    {
+        answerOptions = [];
+
+        var get = _answerOptionService.GetAllOptionsForQuestion(question);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        answerOptions = get.Value.ToList();
+        return true;
+    }
+    private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
+    {
+        userAnswer = null;
+
+        var get = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId!.Value);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        userAnswer = get.Value.FirstOrDefault();
+        return true;
+    }
+}

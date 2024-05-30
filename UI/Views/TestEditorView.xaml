@@ -113,7 +113,7 @@
                                 Visibility="{Binding Test.HasDescription, Converter={StaticResource BoolToVis}}">
                         <Label Content="Опис:" FontSize="14" 
                                VerticalAlignment="Top" Margin="0,0,10,0"/>
-                        <TextBox Text="{Binding Test.Description}" FontSize="14"
+                        <TextBox Text="{Binding Test.Description}" FontSize="14" AcceptsReturn="True"
                                  VerticalAlignment="Center" Height="Auto" MinWidth="200" MaxWidth="250"
                                  TextWrapping="Wrap"/>
                     </StackPanel>
@@ -143,7 +143,7 @@
                     </StackPanel>
 
                     <!--Має спроби?-->
-                    <CheckBox Content="Має спроби?" IsChecked="{Binding Test.HasAttempts}" FontSize="14"
+                    <CheckBox Content="Має спроби" IsChecked="{Binding Test.HasAttempts}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
@@ -193,12 +193,31 @@
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
                     <!--Обмеження по часу-->
-                    <StackPanel Orientation="Horizontal" 
+                    <StackPanel Orientation="Vertical" 
                                 Margin="0,0,0,10"
                                 Visibility="{Binding Test.HasTimeLimit, Converter={StaticResource BoolToVis}}">
                         <Label Content="Часове обмеження:" FontSize="14" 
                                VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <xctk:TimePicker Value="{Binding TimeLimit}" Kind="Local" Format="LongTime" MinWidth="100"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Label Content="Годин:" FontSize="14" 
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <custom:IntegerInputBox Text="{Binding TimeLimitHours}" FontSize="14" MaxLength="2"
+                                       VerticalAlignment="Center" Width="25" Margin="0,0,10,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Label Content="Хвилин:" FontSize="14" 
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <custom:IntegerInputBox Text="{Binding TimeLimitMinutes}" FontSize="14" MaxLength="2"
+                                                    VerticalAlignment="Center" Width="25" Margin="0,0,10,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Label Content="Секунд:" FontSize="14" 
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <custom:IntegerInputBox Text="{Binding TimeLimitSeconds}" FontSize="14" MaxLength="2"
+                                                    VerticalAlignment="Center" Width="25" Margin="0,0,10,0"/>
+                        </StackPanel>
+
+                        <!--<xctk:TimePicker Value="{Binding TimeLimit}" Kind="Local" Format="LongTime" MinWidth="100"/>-->
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
@@ -267,7 +286,7 @@
             
             <!--Питання-->
             <Border Grid.Row="1" Padding="25">
-                <TextBox Text="{Binding SelectedQuestion.Content}" FontSize="24" TextWrapping="Wrap"
+                <TextBox Text="{Binding SelectedQuestion.Content}" FontSize="24" TextWrapping="Wrap" MaxLines="100" AcceptsReturn="True"
                              VerticalAlignment="Stretch" Margin="10,0,10,0"/>
             </Border>
 

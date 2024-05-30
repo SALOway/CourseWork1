@@ -66,7 +66,7 @@ public partial class TestDetailsViewModel : ObservableObject
         LastTestAttempt = lastTestAttempt != null ? new ObservableTestAttempt(lastTestAttempt) : null;
 
         CanContinue = LastTestAttempt?.Status == TestAttemptStatus.InProcess;
-        CanStart = !CanContinue && Test.AttemptsCount < Test.MaxAttempts;
+        CanStart = !CanContinue && (!Test.HasAttempts || Test.AttemptsCount < Test.MaxAttempts);
 
         if (Test.HasTermin && LastTestAttempt?.Status != TestAttemptStatus.InProcess)
         {

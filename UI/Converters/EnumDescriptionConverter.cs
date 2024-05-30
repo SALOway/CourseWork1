@@ -9,7 +9,7 @@ public class EnumDescriptionConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null) return null;
+        if (value == null || string.IsNullOrEmpty(value.ToString())) return null;
         FieldInfo fi = value.GetType().GetField(value.ToString());
         DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
         return (attributes.Length > 0) ? attributes[0].Description : value.ToString();

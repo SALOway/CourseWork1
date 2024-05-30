@@ -29,7 +29,7 @@
                    FontSize="24"/>
 
             <Label Content="{Binding LastTestAttempt.AmountOfAnsweredQuestions, FallbackValue='NULL'}"
-                   ContentStringFormat="Прохідний бал: {0}"
+                   ContentStringFormat="Кількість наданих відповідей: {0}"
                    FontSize="24"
                    Visibility="{Binding HasLastTestAttempt, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
 

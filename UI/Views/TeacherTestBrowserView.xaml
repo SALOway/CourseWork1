@@ -38,7 +38,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="3">
-                    <Label Content="{Binding TimeLimit}" ContentStringFormat="Ліміт часу: {0:hh:mm:ss}"  FontSize="24"
+                    <Label Content="{Binding TimeLimit}" ContentStringFormat="Ліміт часу: {0:HH:mm:ss}"  FontSize="24"
                            Visibility="{Binding HasTimeLimit, Converter={StaticResource BoolToVis}}"/>
                     <Label Content="{Binding RequiredGrade}" ContentStringFormat="Прохідний бал: {0}"  FontSize="24"
                            Visibility="{Binding HasRequiredGrade, Converter={StaticResource BoolToVis}}"/>
@@ -86,7 +86,9 @@
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
                       ItemTemplate="{StaticResource TestItemTempltate}"
                       FontSize="24"
-                      HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
+                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                      HorizontalContentAlignment="Stretch" 
+                      Visibility="{Binding AnyTest, Converter={StaticResource BoolToVis}}">
              
             </ListView>
         </StackPanel>

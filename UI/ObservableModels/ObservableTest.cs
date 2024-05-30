@@ -110,12 +110,14 @@ public partial class ObservableTest : ObservableObject
         test.HasDesription = HasDescription;
         test.Description = Description;
         test.Status = Status;
+        test.HasAttempts = HasAttempts;
         test.MaxAttempts = MaxAttempts;
         test.HasRequiredGrade = HasRequiredGrade;
         test.RequiredGrade = RequiredGrade;
         test.HasTermin = HasTermin;
         test.Termin = Termin.HasValue ? Termin.Value.ToUniversalTime() : test.Termin;
         test.HasTimeLimit = HasTimeLimit;
+        
         test.TimeLimit = TimeLimit.HasValue ? TimeLimit.Value : test.TimeLimit;
         test.StudentGroup = group;
         test.UpdatedAt = DateTime.UtcNow;

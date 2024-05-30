@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Core.Enums;
 using Core.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows;
 using UI.Enums;
 using UI.Interfaces;
@@ -11,7 +12,7 @@ using UI.ObservableModels;
 
 namespace UI.ViewModels;
 
-public partial class TestEditorViewModel : ObservableObject
+public partial class TestEditorViewModel : ObservableValidator
 {
     private readonly ISessionContext _sessionContext;
     private readonly IUserService _userService;
@@ -50,7 +51,16 @@ public partial class TestEditorViewModel : ObservableObject
     private ObservableStudentGroup? _selectedStudentGroup;
 
     [ObservableProperty]
-    private DateTime? _timeLimit;
+    [Range(0, int.MaxValue, ErrorMessage = "Значення годин не може бути від'ємним")]
+    private int? _timeLimitHours;
+
+    [ObservableProperty]
+    [Range(0, 59, ErrorMessage = "Значення хвилин має бути у проміжку від 0 до 59")]
+    private int? _timeLimitMinutes;
+
+    [ObservableProperty]
+    [Range(0, 59, ErrorMessage = "Значення секунд має бути у проміжку від 0 до 59")]
+    private int? _timeLimitSeconds;
 
     public TestEditorViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService, ITestAttemptService testAttemptService, IStudentGroupService studentGroupService)
     {
@@ -67,7 +77,6 @@ public partial class TestEditorViewModel : ObservableObject
         TestStatuses = new ObservableCollection<TestStatus>((TestStatus[])Enum.GetValues(typeof(TestStatus)));
         SelectedTestStatus = TestStatuses.First();
 
-
         if (!TryGetObservableTest(out var test) || !TryGetObservableStudentGroups(out var studentGroups))
         {
             Test = null!;
@@ -77,6 +86,9 @@ public partial class TestEditorViewModel : ObservableObject
 
         Test = test;
         StudentGroups = studentGroups;
+        TimeLimitHours = Test.TimeLimit?.Hour;
+        TimeLimitMinutes = Test.TimeLimit?.Minute;
+        TimeLimitSeconds = Test.TimeLimit?.Second;
 
         SelectedStudentGroup = StudentGroups.First(g => g.StudentGroupId == Test.StudentGroup.StudentGroupId);
         SelectedTestStatus = Test.Status;
@@ -132,6 +144,14 @@ public partial class TestEditorViewModel : ObservableObject
     [RelayCommand]
     private void SaveTest()
     {
+        if (Test.HasTimeLimit)
+        {
+            var timeLimit = new DateTime().AddHours(TimeLimitHours!.Value)
+                                          .AddMinutes(TimeLimitMinutes!.Value)
+                                          .AddSeconds(TimeLimitSeconds!.Value);
+            Test.TimeLimit = timeLimit;
+        }
+
         Test.Save(_testService, _studentGroupService);
         foreach (var question in Test.Questions)
         {
