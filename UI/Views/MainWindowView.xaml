@@ -6,12 +6,10 @@
         xmlns:local="clr-namespace:UI.Views" 
         xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         xmlns:selectors="clr-namespace:UI.Selectors"
+        xmlns:context="clr-namespace:UI.ObservableModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         WindowState="Maximized">
-    <Window.DataContext>
-        <viewmodels:MainWindowViewModel/>
-    </Window.DataContext>
     <Window.Resources>
         <!--View Templates-->
         <!--Вхід в систему-->
@@ -27,34 +25,35 @@
             <local:TestDetailsView IsTabStop="False"/>
         </DataTemplate>
         <!--Проходження тесту-->
-        <DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
+        <!--<DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
             <local:TestAttemptView IsTabStop="False"/>
-        </DataTemplate>
+        </DataTemplate>-->
         <!--Меню вчителя-->
-        <DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
+        <!--<DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
             <local:TeacherMenuView IsTabStop="False"/>
-        </DataTemplate>
+        </DataTemplate>-->
         <!--Браузер тестів вчителя-->
-        <DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
+        <!--<DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
             <local:TeacherTestBrowserView IsTabStop="False"/>
-        </DataTemplate>
+        </DataTemplate>-->
         <!--Редактор тестів-->
-        <DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
+        <!--<DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
             <local:TestEditorView IsTabStop="False"/>
-        </DataTemplate>
+        </DataTemplate>-->
 
         <!--Selectors-->
         <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
                                             LogInTemplate="{StaticResource LogInTemplate}"
                                             StudentTestBrowserTemplate="{StaticResource StudentTestBrowserTemplate}"
                                             TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
-                                            TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
-                                            TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
-                                            TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
-                                            TestEditorTemplate="{StaticResource TestEditorTemplate}"/>
+                                            />
+        <!--TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
+TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
+TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
+TestEditorTemplate="{StaticResource TestEditorTemplate}"-->
     </Window.Resources>
     <Grid>
-        <ContentControl Content="{Binding CurrentState, FallbackValue={x:Static viewmodels:MainWindowViewModel.DefaultState}}" 
+        <ContentControl Content="{Binding CurrentState}" 
                         ContentTemplateSelector="{StaticResource AppStateTemplateSelector}" 
                         IsTabStop="False"/>
     </Grid>

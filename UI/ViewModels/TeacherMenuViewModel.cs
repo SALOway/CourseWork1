@@ -5,30 +5,30 @@ using UI.Enums;
 
 namespace UI.ViewModels;
 
-public partial class TeacherMenuViewModel : ObservableObject
-{
-    [RelayCommand]
-    private static void LogOut()
-    {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+//public partial class TeacherMenuViewModel : ObservableObject
+//{
+//    [RelayCommand]
+//    private static void LogOut()
+//    {
+//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-        context.CurrentUser = null;
-        context.CurrentState = AppState.LogIn;
-    }
+//        context.CurrentUser = null;
+//        context.CurrentState = AppState.LogIn;
+//    }
 
-    [RelayCommand]
-    private void OpenTestBrowser()
-    {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+//    [RelayCommand]
+//    private void OpenTestBrowser()
+//    {
+//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-        context.CurrentState = AppState.TeacherTestBrowser;
-    }
+//        context.CurrentState = AppState.TeacherTestBrowser;
+//    }
 
-    //[RelayCommand]
-    //private void OpenStudentBrowser()
-    //{
-    //    var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+//    //[RelayCommand]
+//    //private void OpenStudentBrowser()
+//    //{
+//    //    var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-    //    context.CurrentState = AppState.StudentBrowser;
-    //}
-}
+//    //    context.CurrentState = AppState.StudentBrowser;
+//    //}
+//}

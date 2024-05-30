@@ -6,6 +6,7 @@ namespace BLL.Interfaces;
 public interface ITestService
 {
     Result Add(Test test);
+    Result<Test> GetById(Guid id);
     Result<IQueryable<Test>> Get(Expression<Func<Test, bool>>? predicate = null);
     Result Update(Test test);
     Result Remove(Expression<Func<Test, bool>> predicate);

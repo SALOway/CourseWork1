@@ -8,7 +8,7 @@ public partial class LogInView : UserControl
 {
     public LogInView()
     {
-        DataContext = new LogInViewModel();
+        DataContext = new LogInViewModel(SessionContextProvider.SessionContext, ServiceProvider.UserService);
         InitializeComponent();
     }
 }

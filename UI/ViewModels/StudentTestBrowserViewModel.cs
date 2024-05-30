@@ -13,6 +13,14 @@ namespace UI.ViewModels;
 
 public partial class StudentTestBrowserViewModel : ObservableObject
 {
+    private readonly ISessionContext _sessionContext;
+    private readonly IUserService _userService;
+    private readonly ITestService _testService;
+    private readonly IQuestionService _questionService;
+    private readonly IAnswerOptionService _answerOptionService;
+    private readonly IUserAnswerService _userAnswerService;
+    private readonly ITestAttemptService _testAttemptService;
+
     [ObservableProperty]
     private ObservableCollection<ObservableTest> _tests = [];
 
@@ -24,14 +32,8 @@ public partial class StudentTestBrowserViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableTest? _selectedTest;
-    private readonly ISessionContext _sessionContext;
-    private readonly IUserService _userService;
-    private readonly ITestService _testService;
-    private readonly IQuestionService _questionService;
-    private readonly IAnswerOptionService _answerOptionService;
-    private readonly IUserAnswerService _userAnswerService;
 
-    public StudentTestBrowserViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService)
+    public StudentTestBrowserViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService, ITestAttemptService testAttemptService)
     {
         _sessionContext = sessionContext;
         _userService = userService;
@@ -39,6 +41,8 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         _questionService = questionService;
         _answerOptionService = answerOptionService;
         _userAnswerService = userAnswerService;
+        _testAttemptService = testAttemptService;
+
         LoadTests();
     }
 
@@ -76,7 +80,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
 
     private void LoadTests()
     {
-        if (!TryGetCurrentUser(out var user) || !TryGetObservableTests(user.StudentGroup!, out var tests))
+        if (!TryGetCurrentUser(out var user) || !TryGetObservableTests(user, out var tests))
         {
             LogOut();
             return;
@@ -124,11 +128,11 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         return true;
     }
 
-    private bool TryGetObservableTests(StudentGroup studentGroup, out ObservableCollection<ObservableTest> observableTests)
+    private bool TryGetObservableTests(User user, out ObservableCollection<ObservableTest> observableTests)
     {
         observableTests = [];
 
-        var getTests = _testService.GetTestsByGroup(studentGroup);
+        var getTests = _testService.GetTestsByGroup(user.StudentGroup!);
         if (!getTests.IsSuccess)
         {
             MessageBox.Show("Виникла критична помилка\n" + getTests.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -141,6 +145,13 @@ public partial class StudentTestBrowserViewModel : ObservableObject
         {
             var observableTest = new ObservableTest(test);
 
+            if (!TryGetLastUserAttempt(test, out var lastTestAttempt))
+            {
+                return false;
+            }
+
+            observableTest.LastAttemptStatus = lastTestAttempt?.Status;
+
             if (!TryGetObservableQuestions(test, out var questions))
             {
                 return false;
@@ -150,6 +161,22 @@ public partial class StudentTestBrowserViewModel : ObservableObject
 
             observableTests.Add(observableTest);
         }
+
+        return true;
+    }
+
+    private bool TryGetLastUserAttempt(Test test, out TestAttempt? lastTestAttempt)
+    {
+        lastTestAttempt = null;
+
+        var getTestAttempt = _testAttemptService.GetLastAttempt(_sessionContext.CurrentUserId!.Value, test.Id);
+        if (!getTestAttempt.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTestAttempt.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        lastTestAttempt = getTestAttempt.Value;
 
         return true;
     }

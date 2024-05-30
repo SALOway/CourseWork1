@@ -6,13 +6,13 @@
              xmlns:local="clr-namespace:UI.Views" 
              xmlns:viewmodels="clr-namespace:UI.ViewModels" 
              xmlns:models="clr-namespace:UI.ObservableModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:TeacherTestBrowserViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="640" d:DesignWidth="1208">
+    <!--d:DataContext="{d:DesignInstance Type=viewmodels:TeacherTestBrowserViewModel}"-->
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <!--<BooleanToVisibilityConverter x:Key="BoolToVis"/>-->
 
-        <DataTemplate x:Key="TestItemTempltate" DataType="models:ObservableTest">
+        <!--<DataTemplate x:Key="TestItemTempltate" DataType="models:ObservableTest">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -53,24 +53,24 @@
                 <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0}" FontSize="24"
                        Grid.Column="5"/>
             </Grid>
-        </DataTemplate>
+        </DataTemplate>-->
     </UserControl.Resources>
 
     <Grid>
         <!--Кнопка назад-->
-        <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
-                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>
+        <!--<Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>-->
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
+        <!--<StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
-                <!--Пошукова строка-->
+                --><!--Пошукова строка--><!--
                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" FontSize="24"
                  MinWidth="250" Margin="0,0,5,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
                     </TextBox.InputBindings>
                 </TextBox>
-                <!--Кнопка пошуку-->
+                --><!--Кнопка пошуку--><!--
                 <Button Content="Пошук" Command="{Binding SearchCommand}" FontSize="24"
                         Margin="0,0,5,0" Padding="25,5,25,5"/>
                 <Button Content="Створити" Command="{Binding CreateNewTestCommand}" FontSize="24" 
@@ -81,13 +81,13 @@
                         Margin="0,0,5,0" Padding="5"/>
             </StackPanel>
 
-            <!--Список відфільтррованих тестів-->
+            --><!--Список відфільтррованих тестів--><!--
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
                       ItemTemplate="{StaticResource TestItemTempltate}"
                       FontSize="24"
                       HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
              
             </ListView>
-        </StackPanel>
+        </StackPanel>-->
     </Grid>
 </UserControl>

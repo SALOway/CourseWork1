@@ -17,6 +17,10 @@ public class AppStateTemplateSelector : DataTemplateSelector
 
     public override DataTemplate? SelectTemplate(object item, DependencyObject container)
     {
+        if (item == null)
+        {
+            return Placeholder;
+        }
         var appState = (AppState)item;
         return appState switch
         {

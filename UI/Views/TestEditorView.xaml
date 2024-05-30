@@ -7,17 +7,18 @@
              xmlns:converters="clr-namespace:UI.Converters"
              xmlns:selectors="clr-namespace:UI.Selectors"
              xmlns:models="clr-namespace:UI.ObservableModels"
-             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestEditorViewModel}"
+             xmlns:viewmodels="clr-namespace:UI.ViewModels"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
              xmlns:custom="clr-namespace:UI.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="640" d:DesignWidth="1280">
-    <UserControl.Resources>
+    <!--d:DataContext="{d:DesignInstance Type=viewmodels:TestEditorViewModel}"-->
+    <!--<UserControl.Resources>
         <converters:IndexToNumberConverter x:Key="IndexToNum"/>
         <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!--Question template-->
+        --><!--Question template--><!--
         <DataTemplate x:Key="QuestionItem" DataType="models:ObservableQuestion">
             <Border>
                 <Label Content="{Binding RelativeSource={RelativeSource AncestorType=ListViewItem, AncestorLevel=1}, 
@@ -28,7 +29,7 @@
             </Border>
         </DataTemplate>
 
-        <!--Option templates-->
+        --><!--Option templates--><!--
         <DataTemplate x:Key="SingleAnswerOptionTemplate" DataType="models:ObservableAnswerOption">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                 <RadioButton IsChecked="{Binding IsChecked}" GroupName="Options"
@@ -68,20 +69,20 @@
                        VerticalAlignment="Center"/>
         </DataTemplate>
 
-        <!--Selectors-->
+        --><!--Selectors--><!--
         <selectors:AnswerOptionTemplateSelector x:Key="AnswerOptionTemplateSelector"
                                                 SingleOptionQuestionOptions="{StaticResource SingleOptionQuestionOptions}"
                                                 MultipleOptionQuestionOptions="{StaticResource MultipleOptionQuestionOptions}"/>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     
     <Grid>
-        <Grid.ColumnDefinitions>
+        <!--<Grid.ColumnDefinitions>
             <ColumnDefinition Width="350"/>
             <ColumnDefinition/>
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
 
-        <!--Ліва бокова панель налаштування-->
+        --><!--Ліва бокова панель налаштування--><!--
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -89,7 +90,7 @@
             </Grid.RowDefinitions>
             <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
-                    <!--Назва Тесту-->
+                    --><!--Назва Тесту--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Назва тесту:" FontSize="14"
@@ -99,12 +100,12 @@
                                  TextWrapping="Wrap"/>
                     </StackPanel>
                     
-                    <!--Має опис?-->
+                    --><!--Має опис?--><!--
                     <CheckBox Content="Має опис" IsChecked="{Binding Test.HasDescription}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
-                    <!--Опис-->
+                    --><!--Опис--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
                                 Visibility="{Binding Test.HasDescription, Converter={StaticResource BoolToVis}}">
@@ -115,7 +116,7 @@
                                  TextWrapping="Wrap"/>
                     </StackPanel>
 
-                    <!--Статус-->
+                    --><!--Статус--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Статус:" FontSize="14" 
@@ -127,7 +128,7 @@
                                   VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
-                    <!--Група-->
+                    --><!--Група--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Група:" FontSize="14" 
@@ -139,7 +140,7 @@
                                   VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
-                    <!--Кількість спроб-->
+                    --><!--Кількість спроб--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10">
                         <Label Content="Кількість спроб:" FontSize="14" 
@@ -148,12 +149,12 @@
                                                 VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
-                    <!--Має проходняк?-->
+                    --><!--Має проходняк?--><!--
                     <CheckBox Content="Має прохідний бал" IsChecked="{Binding Test.HasRequiredGrade}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
-                    <!--Проходняк-->
+                    --><!--Проходняк--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
                                 Visibility="{Binding Test.HasRequiredGrade, Converter={StaticResource BoolToVis}}">
@@ -163,12 +164,12 @@
                                                 VerticalAlignment="Center" MinWidth="200"/>
                     </StackPanel>
 
-                    <!--Має термін?-->
+                    --><!--Має термін?--><!--
                     <CheckBox Content="Має термін" IsChecked="{Binding Test.HasTermin}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
-                    <!--Термін-->
+                    --><!--Термін--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
                                 Visibility="{Binding Test.HasTermin, Converter={StaticResource BoolToVis}}">
@@ -178,12 +179,12 @@
                                     VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!--Має обмж?-->
+                    --><!--Має обмж?--><!--
                     <CheckBox Content="Має часове обмеження" IsChecked="{Binding Test.HasTimer}" FontSize="14"
                               VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,10" Padding="5"
                               VerticalContentAlignment="Center" FlowDirection="RightToLeft"/>
 
-                    <!--Обмж-->
+                    --><!--Обмж--><!--
                     <StackPanel Orientation="Horizontal" 
                                 Margin="0,0,0,10"
                                 Visibility="{Binding Test.HasTimer, Converter={StaticResource BoolToVis}}">
@@ -208,7 +209,7 @@
             </Grid>
         </Grid>
 
-        <!--Редактор питання-->
+        --><!--Редактор питання--><!--
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -218,13 +219,13 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0">
-                <!--Питання #i-->
+                --><!--Питання #i--><!--
                 <Label Content="{Binding SelectedQuestionNumber, FallbackValue='Question Number'}" 
                        ContentStringFormat="Питання #{0}" 
                        FontSize="24"
                        HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,10,10"/>
                 
-                <!--Оцінка за питання-->
+                --><!--Оцінка за питання--><!--
                 <Grid Margin="10,0,10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -238,7 +239,7 @@
                                             Grid.Column="1"/>
                 </Grid>
 
-                <!--Тип питання-->
+                --><!--Тип питання--><!--
                 <Grid Margin="10,0,10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -256,13 +257,13 @@
                 </Grid>
             </StackPanel>
             
-            <!--Питання-->
+            --><!--Питання--><!--
             <Border Grid.Row="1" Padding="25">
                 <TextBox Text="{Binding SelectedQuestion.Content}" FontSize="24" TextWrapping="Wrap"
                              VerticalAlignment="Stretch" Margin="10,0,10,0"/>
             </Border>
 
-            <!--Список з варіантів відповіді-->
+            --><!--Список з варіантів відповіді--><!--
             <ContentControl Content="{Binding SelectedQuestion.QuestionType}"
                             ContentTemplateSelector="{StaticResource AnswerOptionTemplateSelector}"
                             VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,0,10,0"
@@ -270,7 +271,7 @@
                             Grid.Row="2"/>
             
 
-            <!--Кнопка додавання та видалення варіанту відповіді-->
+            --><!--Кнопка додавання та видалення варіанту відповіді--><!--
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Center" VerticalAlignment="Top"
                         Grid.Row="3">
@@ -281,7 +282,7 @@
 
             </StackPanel>
             
-            <!--Кнопки перемикання питання-->
+            --><!--Кнопки перемикання питання--><!--
             <Button Content="Минулий" FontSize="24" Command="{Binding PreviousCommand}"
                     HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10" Padding="25,5,25,5"
                     Grid.Row="3"
@@ -292,7 +293,7 @@
                     Visibility="{Binding IsSelectedQuestionNotLast, Converter={StaticResource BoolToVis}}"/>
         </Grid>
 
-        <!--Права бокова панель питань-->
+        --><!--Права бокова панель питань--><!--
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -313,6 +314,6 @@
             <Button Content="-" FontSize="24" Command="{Binding RemoveQuestionCommand}"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="25,5,25,5"
             Grid.Row="2"/>
-        </Grid>
+        </Grid>-->
     </Grid>
 </UserControl>

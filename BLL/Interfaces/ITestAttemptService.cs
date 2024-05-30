@@ -9,5 +9,5 @@ public interface ITestAttemptService
     Result<IQueryable<TestAttempt>> Get(Expression<Func<TestAttempt, bool>>? predicate = null);
     Result Update(TestAttempt testAttempt);
     Result Remove(Expression<Func<TestAttempt, bool>> predicate);
-    Result<TestAttempt?> GetLastAttempt(User user, Test test);
+    Result<TestAttempt?> GetLastAttempt(Guid userId, Guid testId);
 }

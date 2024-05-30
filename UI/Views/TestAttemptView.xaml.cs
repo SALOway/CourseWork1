@@ -7,7 +7,7 @@ public partial class TestAttemptView : UserControl
 {
     public TestAttemptView()
     {
-        DataContext = new TestAttemptViewModel();
+        //DataContext = new TestAttemptViewModel();
         InitializeComponent();
     }
 }

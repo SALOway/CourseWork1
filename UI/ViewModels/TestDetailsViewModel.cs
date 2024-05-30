@@ -1,18 +1,30 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core.Enums;
 using Core.Models;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using UI.Enums;
+using UI.Interfaces;
 using UI.ObservableModels;
 
 namespace UI.ViewModels;
 
 public partial class TestDetailsViewModel : ObservableObject
 {
+    private readonly ISessionContext _sessionContext;
+    private readonly IUserService _userService;
+    private readonly ITestService _testService;
+    private readonly IQuestionService _questionService;
+    private readonly IAnswerOptionService _answerOptionService;
+    private readonly IUserAnswerService _userAnswerService;
+    private readonly ITestAttemptService _testAttemptService;
+
     private readonly DispatcherTimer? _timer;
+
 
     [ObservableProperty]
     private ObservableTest _test;
@@ -26,101 +38,61 @@ public partial class TestDetailsViewModel : ObservableObject
     [ObservableProperty]
     private bool _canContinue;
 
-    public TestDetailsViewModel()
+    public TestDetailsViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService, ITestAttemptService testAttemptService)
     {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+        _sessionContext = sessionContext;
+        _userService = userService;
+        _testService = testService;
+        _questionService = questionService;
+        _answerOptionService = answerOptionService;
+        _userAnswerService = userAnswerService;
+        _testAttemptService = testAttemptService;
 
-        var test = context.CurrentTest!;
-        var user = context.CurrentUser!;
-        Test = new ObservableTest(test);
-
-        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
-        if (!getQuestions.IsSuccess)
+        if (!TryGetObservableTest(out var test))
         {
-            MessageBox.Show(getQuestions.ErrorMessage);
+            Test = null!;
+            Back();
             return;
         }
 
-        var questions = getQuestions.Value.ToList();
+        Test = test;
 
-        foreach (var question in questions)
+        if (!TryGetLastUserAttempt(out var lastTestAttempt))
         {
-            var observableQuestion = new ObservableQuestion(question);
-
-            var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
-            if (!getAnswerOption.IsSuccess)
-            {
-                MessageBox.Show(getAnswerOption.ErrorMessage);
-                return;
-            }
-
-            var answerOptions = getAnswerOption.Value.ToList();
-
-            foreach (var answerOption in answerOptions)
-            {
-                var userAnswer = answerOption.UserAnswers.Where(a => a.User.Id == user.Id).FirstOrDefault();
-                var observableAnswerOption = new ObservableAnswerOption(answerOption, userAnswer!);
-
-                observableQuestion.AnswerOptions.Add(observableAnswerOption);
-            }
-
-            Test.Questions.Add(observableQuestion);
-
-            if (test.HasTermin || test.HasTimer)
-            {
-                _timer = new DispatcherTimer();
-                _timer.Tick += (s, e) => {
-                    if (LastTestAttempt != null)
-                    {
-                        if (test.HasTermin && LastTestAttempt.Status != TestAttemptStatus.InProcess)
-                        {
-                            var termin = test.Termin!.Value;
-                            var difference = termin.Ticks - DateTime.UtcNow.Ticks;
-                            CanStart = difference > 0;
-                        }
-                        else if (LastTestAttempt.Status == TestAttemptStatus.InProcess && test.HasTimer)
-                        {
-                            var timeLimit = test.TimeLimit!.Value;
-                            var startedAt = LastTestAttempt.StartedAt;
-                            var difference = DateTime.UtcNow.Ticks - startedAt.Ticks + timeLimit.Ticks;
-                            if (difference >= 0)
-                            {
-                                LastTestAttempt.Status = TestAttemptStatus.Failed;
-                                LastTestAttempt.EndedAt = LastTestAttempt.StartedAt + test.TimeLimit;
-                                LastTestAttempt.SaveModel();
-                                CanContinue = false;
-                            }
-                        }
-                    }
-                };
-                _timer.Interval = TimeSpan.FromMilliseconds(100);
-                _timer.Start();
-            }
-        }
-
-        var getLastAttempt = ServiceProvider.TestAttemptService.GetLastAttempt(user, test);
-        if (!getLastAttempt.IsSuccess)
-        {
-            MessageBox.Show("Виникла помилка при спробі отримати останню спробу");
-            Trace.WriteLine(getLastAttempt.ErrorMessage);
+            Back();
             return;
         }
 
-        var lastAttempt = getLastAttempt.Value;
-        if (lastAttempt != null)
-        {
-            LastTestAttempt = new ObservableTestAttempt(lastAttempt);
-            CanContinue = Test.LastAttemptStatus == TestAttemptStatus.InProcess;
-        }
+        LastTestAttempt = lastTestAttempt != null ? new ObservableTestAttempt(lastTestAttempt) : null;
 
+        CanContinue = LastTestAttempt?.Status == TestAttemptStatus.InProcess;
         CanStart = !CanContinue && Test.AttemptsCount < Test.MaxAttempts;
 
-        if (test.HasTermin && LastTestAttempt?.Status != TestAttemptStatus.InProcess)
+        if (Test.HasTermin && LastTestAttempt?.Status != TestAttemptStatus.InProcess)
         {
-            var termin = test.Termin!.Value;
+            var termin = Test.Termin!.Value;
             var difference = termin.Ticks - DateTime.UtcNow.Ticks;
             CanStart = difference > 0;
         }
+
+        _timer = LastTestAttempt != null && (Test.HasTermin || Test.HasTimeLimit) ? new DispatcherTimer() : null;
+
+        if (_timer != null)
+        {
+            _timer.Interval = TimeSpan.FromMilliseconds(100);
+
+            if (Test.HasTermin && LastTestAttempt!.Status != TestAttemptStatus.InProcess)
+            {
+                _timer.Tick += Termin_Tick;
+            }
+
+            if (Test.HasTimeLimit && LastTestAttempt!.Status == TestAttemptStatus.InProcess)
+            {
+                _timer.Tick += TimeLimit_Tick;
+            }
+        }
+
+        _timer?.Start();
     }
 
     public bool HasLastTestAttempt => LastTestAttempt != null;
@@ -134,47 +106,244 @@ public partial class TestDetailsViewModel : ObservableObject
         {
             return;
         }
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-        var newAttempt = new TestAttempt()
+        if (!TryCreateNewTestAttempt(out var newAttempt))
         {
-            Status = TestAttemptStatus.InProcess,
-            User = context.CurrentUser!,
-            Test = context.CurrentTest!,
-            StartedAt = DateTime.UtcNow
-        };
-
-        var adding = ServiceProvider.TestAttemptService.Add(newAttempt);
-        if (!adding.IsSuccess)
-        {
-            MessageBox.Show("Виникла помилка при спробі cтворення нової спроби");
-            Trace.WriteLine(adding.ErrorMessage);
             return;
         }
 
         _timer?.Stop();
-        context.CurrentTestAttempt = newAttempt;
-        context.CurrentState = AppState.TestAttempt;
+        _sessionContext.CurrentTestAttemptId = newAttempt.Id;
+        _sessionContext.CurrentState = AppState.TestAttempt;
     }
 
     [RelayCommand]
     private void ContinueLastAttempt()
     {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-
         _timer?.Stop();
-        context.CurrentTestAttempt = LastTestAttempt!.Model;
-        context.CurrentState = AppState.TestAttempt;
+        _sessionContext.CurrentTestAttemptId = LastTestAttempt!.TestAttemptId;
+        _sessionContext.CurrentState = AppState.TestAttempt;
     }
 
     [RelayCommand]
     private void Back()
     {
-        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-
         _timer?.Stop();
-        context.CurrentTestAttempt = null;
-        context.CurrentTest = null;
-        context.CurrentState = AppState.StudentTestBrowser;
+        _sessionContext.CurrentTestId = null;
+        _sessionContext.CurrentState = AppState.StudentTestBrowser;
+    }
+
+    private bool TryGetCurrentUser(out User user)
+    {
+        user = null!;
+
+        if (_sessionContext.CurrentUserId == null)
+        {
+            MessageBox.Show("Поточний користувач не встановлений", "Помилка наявності користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var getUser = _userService.GetById(_sessionContext.CurrentUserId.Value);
+        if (!getUser.IsSuccess)
+        {
+            MessageBox.Show("Неможливо завантажити дані користувача", "Помилка отримання користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        user = getUser.Value;
+
+        if (user == null)
+        {
+            MessageBox.Show("Неможливо завантажити тести без користувача.\n", "Помилка завантаження тестів", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+        else if (user.Role != UserRole.Student)
+        {
+            MessageBox.Show("Користувач не є студентом.\n", "Помилка ролі користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+        else if (user.StudentGroup == null)
+        {
+            MessageBox.Show("Студент не належить жодній групі.\n", "Помилка належності до групи", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryGetObservableTest(out ObservableTest observableTest)
+    {
+        observableTest = null!;
+
+        if (!TryGetTest(out var test))
+        {
+            return false;
+        }
+
+        observableTest = new ObservableTest(test);
+
+        if (!TryGetObservableQuestions(test, out var questions))
+        {
+            return false;
+        }
+
+        observableTest.Questions = questions;
+
+        return true;
+    }
+
+    private bool TryGetTest(out Test test)
+    {
+        test = null!;
+
+        var getTest = _testService.GetById(_sessionContext.CurrentTestId!.Value);
+        if (!getTest.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        test = getTest.Value;
+        return true;
+    }
+
+    private bool TryGetLastUserAttempt(out TestAttempt? lastTestAttempt)
+    {
+        lastTestAttempt = null;
+
+        var getTestAttempt = _testAttemptService.GetLastAttempt(_sessionContext.CurrentUserId!.Value, _sessionContext.CurrentTestId!.Value);
+        if (!getTestAttempt.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTestAttempt.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        lastTestAttempt = getTestAttempt.Value;
+
+        return true;
+    }
+
+    private bool TryGetObservableQuestions(Test test, out ObservableCollection<ObservableQuestion> observableQuestions)
+    {
+        observableQuestions = [];
+
+        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
+        if (!getQuestions.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getQuestions.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var questions = getQuestions.Value.ToList();
+
+        foreach (var question in questions)
+        {
+            var observableQuestion = new ObservableQuestion(question);
+
+            if (!TryGetObservableAnswerOptions(question, out var observableAnswerOptions))
+            {
+                return false;
+            }
+
+            observableQuestion.AnswerOptions = observableAnswerOptions;
+
+            observableQuestions.Add(observableQuestion);
+        }
+
+        return true;
+    }
+
+    private bool TryGetObservableAnswerOptions(Question question, out ObservableCollection<ObservableAnswerOption> observableAnswerOptions)
+    {
+        observableAnswerOptions = [];
+
+        var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
+        if (!getAnswerOption.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var answerOptions = getAnswerOption.Value.ToList();
+
+        foreach (var answerOption in answerOptions)
+        {
+            if (!TryGetUserAnswer(answerOption, out var userAnswer))
+            {
+                return false;
+            }
+            var isChecked = userAnswer?.IsSelected ?? false;
+
+            var observableAnswerOption = new ObservableAnswerOption(answerOption, isChecked);
+
+            observableAnswerOptions.Add(observableAnswerOption);
+        }
+
+        return true;
+    }
+
+    private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
+    {
+        userAnswer = null!;
+
+        var getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
+
+        if (!getUserAnswers.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getUserAnswers.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        userAnswer = getUserAnswers.Value.FirstOrDefault();
+
+        return true;
+    }
+
+    private bool TryCreateNewTestAttempt(out TestAttempt newAttempt)
+    {
+        newAttempt = null!;
+
+        if (!TryGetCurrentUser(out var user) || !TryGetTest(out var test))
+        {
+            return false;
+        }
+
+        newAttempt = new TestAttempt()
+        {
+            Status = TestAttemptStatus.InProcess,
+            User = user,
+            Test = test,
+            StartedAt = DateTime.UtcNow,
+        };
+
+        var adding = _testAttemptService.Add(newAttempt);
+        if (!adding.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка при спробі cтворення нової спроби\n" + adding.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void Termin_Tick(object? sender, EventArgs e)
+    {
+        var termin = Test.Termin!.Value;
+        var difference = termin.Ticks - DateTime.UtcNow.Ticks;
+        CanStart = difference > 0;
+    }
+
+    private void TimeLimit_Tick(object? sender, EventArgs e) 
+    {
+        var timeLimit = Test.TimeLimit!.Value;
+        var startedAt = LastTestAttempt!.StartedAt;
+        var difference = DateTime.UtcNow.Ticks - startedAt.Ticks + timeLimit.Ticks;
+        if (difference >= 0)
+        {
+            LastTestAttempt.Status = TestAttemptStatus.Failed;
+            LastTestAttempt.EndedAt = LastTestAttempt.StartedAt + Test.TimeLimit.Value.TimeOfDay;
+            //LastTestAttempt.SaveModel();
+            CanContinue = false;
+        }
     }
 }

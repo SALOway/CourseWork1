@@ -15,11 +15,15 @@
     
     <Grid>
         <!--Кнопка виходу з аккаунту-->
-        <Button Content="Вйти з аккаунту" Command="{Binding LogOutCommand}" FontSize="24"
+        <Button Content="Вйти з аккаунту" FontSize="24"
+                Command="{Binding LogOutCommand}"
                 HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>
 
+        <!--Основна частина-->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
+                
                 <!--Пошукова строка-->
                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" FontSize="24"
                          MinWidth="250" Margin="0,0,5,0">
@@ -27,9 +31,11 @@
                         <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
                     </TextBox.InputBindings>
                 </TextBox>
+                
                 <!--Кнопка пошуку-->
                 <Button Content="Пошук" Command="{Binding SearchCommand}" FontSize="24" 
                         Margin="0,0,5,0" Padding="25,5,25,5"/>
+                
                 <!--Кнопка відкриття деталей-->
                 <Button Content="Відкрити деталі" Command="{Binding OpenDetailsCommand}" FontSize="24"
                         Padding="25,5,25,5"/>
@@ -37,16 +43,14 @@
 
             <!--Список відфільтррованих тестів-->
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
-                      FontSize="24"
-                      HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
+                      FontSize="24">
                 <ListView.View>
                     <GridView>
                         <!--Назва тесту-->
                         <GridViewColumn Header="Назва тесту" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" FontSize="24" 
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Name}" FontSize="24"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -54,7 +58,7 @@
                         <GridViewColumn Header="Кількість спроб" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding AttemptsRatio}" 
+                                    <TextBlock Text="{Binding AttemptsRatio}" FontSize="24"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -63,8 +67,8 @@
                         <GridViewColumn Header="Строк" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" 
-                                               HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                    <TextBlock Text="{Binding Termin, StringFormat='{}до {0:HH:mm dd.MM.yyyy}'}" FontSize="24"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
                                                Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -74,6 +78,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding LastAttemptStatus, Converter={StaticResource AttStatToStr}}"
+                                               FontSize="24"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>

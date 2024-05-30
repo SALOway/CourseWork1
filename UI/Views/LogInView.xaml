@@ -26,7 +26,7 @@
                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
             
             <Label Content="Username:" FontSize="24"
-                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Padding="0"
                    Grid.Row="1" Grid.Column="0"/>
             <TextBox Text="{Binding Username,
                                     UpdateSourceTrigger=PropertyChanged,
@@ -34,12 +34,12 @@
                                     NotifyOnValidationError=True}" 
                      Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
                      MaxLines="1" FontSize="24" MaxLength="16"
-                     VerticalAlignment="Bottom" MinWidth="150" Margin="0,0,0,25"
+                     VerticalAlignment="Top" MinWidth="150" Margin="0,0,0,25"
                      Grid.Row="1" Grid.Column="1" 
                      TabIndex="0"/>
 
             <Label Content="Password:" FontSize="24"
-                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Padding="0"
                    Grid.Row="2" Grid.Column="0"/>
             <TextBox Text="{Binding Password,
                                     UpdateSourceTrigger=PropertyChanged,
@@ -47,7 +47,7 @@
                                     NotifyOnValidationError=True}"
                      Validation.ErrorTemplate="{StaticResource ValidationErrorTemplate}"
                      MaxLines="1" FontSize="24" MaxLength="16"
-                     VerticalAlignment="Bottom" MinWidth="150" Margin="0,0,0,25"
+                     VerticalAlignment="Top" MinWidth="150" Margin="0,0,0,25"
                      Grid.Row="2" Grid.Column="1" 
                      TabIndex="1"/>
 

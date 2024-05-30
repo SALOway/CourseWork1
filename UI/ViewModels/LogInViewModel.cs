@@ -16,17 +16,17 @@ public partial class LogInViewModel : ObservableValidator
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [Required]
-    [StringLength(16, MinimumLength = 2)]
+    [Required(ErrorMessage = "Введіть логін")]
+    [StringLength(16, MinimumLength = 2, ErrorMessage = "Логін користувача має бути більше 2, та менше 16 символів")]
     private string? _username = string.Empty;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [Required]
-    [StringLength(16, MinimumLength = 2)]
+    [Required(ErrorMessage = "Введіть пароль")]
+    [StringLength(16, MinimumLength = 2, ErrorMessage = "Пароль користувача має бути більше 2, та менше 16 символів")]
     private string? _password = string.Empty;
 
-    public LogInViewModel(IUserService userService, ISessionContext sessionContext)
+    public LogInViewModel(ISessionContext sessionContext, IUserService userService)
     {
         _userService = userService;
         _sessionContext = sessionContext;

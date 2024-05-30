@@ -7,7 +7,7 @@ public partial class StudentTestBrowserView : UserControl
 {
     public StudentTestBrowserView()
     {
-        DataContext = new StudentTestBrowserViewModel();
+        DataContext = new StudentTestBrowserViewModel(SessionContextProvider.SessionContext, ServiceProvider.UserService, ServiceProvider.TestService, ServiceProvider.QuestionService, ServiceProvider.AnswerOptionService, ServiceProvider.UserAnswerService, ServiceProvider.TestAttemptService);
         InitializeComponent();
     }
 }

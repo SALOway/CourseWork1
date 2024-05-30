@@ -7,7 +7,7 @@ public partial class TeacherTestBrowserView : UserControl
 {
     public TeacherTestBrowserView()
     {
-        DataContext = new TeacherTestBrowserViewModel();
+        //DataContext = new TeacherTestBrowserViewModel();
         InitializeComponent();
     }
 }

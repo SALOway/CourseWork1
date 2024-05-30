@@ -7,7 +7,7 @@ public partial class TeacherMenuView : UserControl
 {
     public TeacherMenuView()
     {
-        DataContext = new TeacherMenuViewModel();
+        //DataContext = new TeacherMenuViewModel();
         InitializeComponent();
     }
 }

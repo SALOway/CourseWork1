@@ -7,7 +7,7 @@ public partial class TestEditorView : UserControl
 {
     public TestEditorView()
     {
-        DataContext = new TestEditorViewModel();
+        //DataContext = new TestEditorViewModel();
         InitializeComponent();
     }
 }
