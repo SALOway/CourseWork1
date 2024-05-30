@@ -132,7 +132,38 @@ public partial class TestEditorViewModel : ObservableObject
     [RelayCommand]
     private void SaveTest()
     {
-        MessageBox.Show("АЛЛАХУЙ");
+        Test.Save(_testService, _studentGroupService);
+        foreach (var question in Test.Questions)
+        {
+            question.Save(_questionService);
+            foreach (var answerOption in question.AnswerOptions)
+            {
+                answerOption.IsTrue = answerOption.IsChecked;
+                answerOption.Save(_answerOptionService);
+            }
+        }
+
+        MessageBox.Show("Дані були збережені", "Збереження данних", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    [RelayCommand]
+    private void Back()
+    {
+        var answer = MessageBox.Show("Зберегти дані перед поверненням?", "Збереження даних", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+        switch (answer)
+        {
+            case MessageBoxResult.Yes:
+                SaveTest();
+                break;
+            case MessageBoxResult.No:
+                break;
+            default:
+                return;
+        }
+
+        _sessionContext.CurrentTestId = null;
+        _sessionContext.CurrentState = AppState.TeacherTestBrowser;
     }
 
     [RelayCommand]
@@ -195,13 +226,6 @@ public partial class TestEditorViewModel : ObservableObject
 
         SelectedQuestion.AnswerOptions.Remove(SelectedAnswerOption);
         SelectedAnswerOption = SelectedQuestion.AnswerOptions.LastOrDefault();
-    }
-
-    [RelayCommand]
-    private void Back()
-    {
-        _sessionContext.CurrentTestId = null;
-        _sessionContext.CurrentState = AppState.TeacherTestBrowser;
     }
 
     // Service Logic?

@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Core.Enums;
 using Core.Models;
 using System.Collections.ObjectModel;
-using UI.Interfaces;
+using System.Windows;
 
 namespace UI.ObservableModels;
 
@@ -73,23 +74,58 @@ public partial class ObservableTest : ObservableObject
         HasDescription = test.HasDesription;
         Description = test.Description;
         Status = test.Status;
+        HasAttempts = test.HasAttempts;
         MaxAttempts = test.MaxAttempts;
         HasRequiredGrade = test.HasRequiredGrade;
+        RequiredGrade = test.RequiredGrade;
         HasTermin = test.HasTermin;
         Termin = test.Termin.HasValue ? test.Termin.Value.ToLocalTime() : test.Termin;
         HasTimeLimit = test.HasTimeLimit;
         TimeLimit = test.TimeLimit.HasValue ? test.TimeLimit.Value.ToLocalTime() : test.TimeLimit;
         UpdatedAt = test.UpdatedAt.ToLocalTime();
         StudentGroup = new ObservableStudentGroup(test.StudentGroup);
-        //if (context.CurrentUser!.Role == UserRole.Student && test.TestAttempts.Any())
-        //{
-        //    LastAttemptStatus = test.TestAttempts
-        //                            .Where(a => a.User.Id == context.CurrentUser!.Id)
-        //                            .OrderByDescending(a => a.StartedAt)
-        //                            .Select(a => (TestAttemptStatus?)a.Status)
-        //                            .First();
-        //    AttemptsCount = test.TestAttempts.Count(a => a.User.Id == context.CurrentUser!.Id);
-        //}
+    }
+
+    public void Save(ITestService testService, IStudentGroupService studentGroupService)
+    {
+        var getTest = testService.GetById(TestId);
+        if (!getTest.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        var test = getTest.Value;
+        
+        var getGroup = studentGroupService.GetById(StudentGroup.StudentGroupId);
+        if (!getGroup.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        var group = getGroup.Value;
+
+        test.Name = Name;
+        test.HasDesription = HasDescription;
+        test.Description = Description;
+        test.Status = Status;
+        test.MaxAttempts = MaxAttempts;
+        test.HasRequiredGrade = HasRequiredGrade;
+        test.RequiredGrade = RequiredGrade;
+        test.HasTermin = HasTermin;
+        test.Termin = Termin.HasValue ? Termin.Value.ToUniversalTime() : test.Termin;
+        test.HasTimeLimit = HasTimeLimit;
+        test.TimeLimit = TimeLimit.HasValue ? TimeLimit.Value.ToUniversalTime() : test.TimeLimit;
+        test.StudentGroup = group;
+        test.UpdatedAt = DateTime.UtcNow;
+
+        var update = testService.Update(test);
+        if (!update.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + update.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
     }
 
     public string AttemptsRatio => $"{AttemptsCount} з {MaxAttempts}";

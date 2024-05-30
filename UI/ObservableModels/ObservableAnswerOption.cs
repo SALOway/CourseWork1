@@ -1,6 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL;
+using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Core.Enums;
 using Core.Models;
+using System.Windows;
 
 namespace UI.ObservableModels;
 
@@ -28,5 +31,27 @@ public partial class ObservableAnswerOption : ObservableObject
         IsTrue = answerOption.IsTrue;
         QuestionType = answerOption.Question.Type;
         IsChecked = isChecked;
+    }
+
+    public void Save(IAnswerOptionService answerOptionService)
+    {
+        var get = answerOptionService.GetById(AnswerOptionId);
+        if (!get.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        var answerOption = get.Value;
+
+        answerOption.Content = Content;
+        answerOption.IsTrue = IsTrue;
+
+        var update = answerOptionService.Update(answerOption);
+        if (!update.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + update.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
     }
 }

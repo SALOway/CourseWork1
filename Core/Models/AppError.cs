@@ -25,7 +25,11 @@ public class AppError
     public AppError(Exception exception) : this(exception.Message)
     {
         Exception = exception;
-        Message = exception.Message;
+        while (exception.InnerException != null)
+        {
+            Message += $"\n{exception.InnerException.Message}";
+            exception = exception.InnerException;
+        }
     }
 
     public MethodBase? Source { get; set; }

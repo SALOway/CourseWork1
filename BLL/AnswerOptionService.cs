@@ -13,6 +13,22 @@ public class AnswerOptionService(IGenericRepository<AnswerOption> answerOptionRe
     {
         return _repository.Create(answerOption);
     }
+    public Result<AnswerOption> GetById(Guid id)
+    {
+        var getResult = _repository.Get(u => u.Id == id);
+        if (!getResult.IsSuccess)
+        {
+            return Result<AnswerOption>.Failure(getResult.AppErrors);
+        }
+
+        var answerOption = getResult.Value.FirstOrDefault();
+        if (answerOption == null)
+        {
+            return Result<AnswerOption>.Failure("Варіанту відповіді з даним id не існує");
+        }
+
+        return Result<AnswerOption>.Success(answerOption);
+    }
     public Result<IQueryable<AnswerOption>> Get(Expression<Func<AnswerOption, bool>>? predicate = null)
     {
         return _repository.Get(predicate);

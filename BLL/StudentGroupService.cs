@@ -13,6 +13,22 @@ public class StudentGroupService(IGenericRepository<StudentGroup> groupRepositor
     {
         return _repository.Create(studentGroup);
     }
+    public Result<StudentGroup> GetById(Guid id)
+    {
+        var getResult = _repository.Get(u => u.Id == id);
+        if (!getResult.IsSuccess)
+        {
+            return Result<StudentGroup>.Failure(getResult.AppErrors);
+        }
+
+        var group = getResult.Value.FirstOrDefault();
+        if (group == null)
+        {
+            return Result<StudentGroup>.Failure("Групи з даним id не існує");
+        }
+
+        return Result<StudentGroup>.Success(group);
+    }
     public Result<IQueryable<StudentGroup>> Get(Expression<Func<StudentGroup, bool>>? predicate = null)
     {
         return _repository.Get(predicate);

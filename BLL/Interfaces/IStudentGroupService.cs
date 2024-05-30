@@ -5,8 +5,9 @@ namespace BLL.Interfaces;
 
 public interface IStudentGroupService
 {
-    public Result Add(StudentGroup studentGroup);
-    public Result<IQueryable<StudentGroup>> Get(Expression<Func<StudentGroup, bool>>? predicate = null);
-    public Result Update(StudentGroup studentGroup);
-    public Result Remove(Expression<Func<StudentGroup, bool>> predicate);
+    Result Add(StudentGroup studentGroup);
+    Result<StudentGroup> GetById(Guid id);
+    Result<IQueryable<StudentGroup>> Get(Expression<Func<StudentGroup, bool>>? predicate = null);
+    Result Update(StudentGroup studentGroup);
+    Result Remove(Expression<Func<StudentGroup, bool>> predicate);
 }
