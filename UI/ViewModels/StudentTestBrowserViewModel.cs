@@ -185,7 +185,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
     {
         observableQuestions = [];
 
-        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
+        var getQuestions = _questionService.Get(q => q.Test.Id == test.Id);
         if (!getQuestions.IsSuccess)
         {
             MessageBox.Show("Виникла критична помилка\n" + getQuestions.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -215,7 +215,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
     {
         observableAnswerOptions = [];
 
-        var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
+        var getAnswerOption = _answerOptionService.Get(o => o.Question.Id == question.Id);
         if (!getAnswerOption.IsSuccess)
         {
             MessageBox.Show("Виникла критична помилка\n" + getAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
