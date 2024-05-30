@@ -21,6 +21,10 @@ public class AnswerOptionService(IGenericRepository<AnswerOption> answerOptionRe
     {
         return _repository.Update(answerOption);
     }
+    public Result RemoveById(Guid id)
+    {
+        return _repository.Remove(o => o.Id == id);
+    }
     public Result Remove(Expression<Func<AnswerOption, bool>> predicate)
     {
         return _repository.Remove(predicate);

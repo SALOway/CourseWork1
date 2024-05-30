@@ -1,301 +1,504 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BLL.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core.Enums;
 using Core.Models;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 using UI.Enums;
+using UI.Interfaces;
 using UI.ObservableModels;
 
 namespace UI.ViewModels;
 
-//public partial class TestEditorViewModel : ObservableObject
-//{
-//    [ObservableProperty]
-//    private ObservableTest _test;
+public partial class TestEditorViewModel : ObservableObject
+{
+    private readonly ISessionContext _sessionContext;
+    private readonly IUserService _userService;
+    private readonly ITestService _testService;
+    private readonly IQuestionService _questionService;
+    private readonly IAnswerOptionService _answerOptionService;
+    private readonly IUserAnswerService _userAnswerService;
+    private readonly ITestAttemptService _testAttemptService;
+    private readonly IStudentGroupService _studentGroupService;
 
-//    [ObservableProperty]
-//    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotFirst))]
-//    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotLast))]
-//    [NotifyPropertyChangedFor(nameof(SelectedQuestionNumber))]
-//    private ObservableQuestion? _selectedQuestion;
+    [ObservableProperty]
+    private ObservableTest _test;
 
-//    [ObservableProperty]
-//    private ObservableAnswerOption? _selectedAnswerOption;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotFirst))]
+    [NotifyPropertyChangedFor(nameof(IsSelectedQuestionNotLast))]
+    [NotifyPropertyChangedFor(nameof(SelectedQuestionNumber))]
+    private ObservableQuestion? _selectedQuestion;
 
-//    [ObservableProperty]
-//    public ObservableCollection<QuestionType> _questionTypes = [];
+    [ObservableProperty]
+    private ObservableAnswerOption? _selectedAnswerOption;
 
-//    [ObservableProperty]
-//    public ObservableCollection<TestStatus> _testStatuses = [];
+    [ObservableProperty]
+    public ObservableCollection<QuestionType> _questionTypes = [];
 
-//    [ObservableProperty]
-//    private TestStatus? _selectedTestStatus;
+    [ObservableProperty]
+    public ObservableCollection<TestStatus> _testStatuses = [];
 
-//    [ObservableProperty]
-//    public ObservableCollection<StudentGroup> _studentGroups = [];
+    [ObservableProperty]
+    private TestStatus? _selectedTestStatus;
 
-//    [ObservableProperty]
-//    private StudentGroup? _selectedStudentGroup;
+    [ObservableProperty]
+    public ObservableCollection<ObservableStudentGroup> _studentGroups = [];
 
-//    [ObservableProperty]
-//    private DateTime? _timeLimit;
+    [ObservableProperty]
+    private ObservableStudentGroup? _selectedStudentGroup;
 
-//    public TestEditorViewModel()
-//    {
-//        QuestionTypes = new ObservableCollection<QuestionType>((QuestionType[])Enum.GetValues(typeof(QuestionType)));
-//        TestStatuses = new ObservableCollection<TestStatus>((TestStatus[])Enum.GetValues(typeof(TestStatus)));
-//        SelectedTestStatus = TestStatuses.First();
-        
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    [ObservableProperty]
+    private DateTime? _timeLimit;
 
-//        var test = context.CurrentTest!;
-//        Test = new ObservableTest(test);
+    public TestEditorViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService, ITestAttemptService testAttemptService, IStudentGroupService studentGroupService)
+    {
+        _sessionContext = sessionContext;
+        _userService = userService;
+        _testService = testService;
+        _questionService = questionService;
+        _answerOptionService = answerOptionService;
+        _userAnswerService = userAnswerService;
+        _testAttemptService = testAttemptService;
+        _studentGroupService = studentGroupService;
 
-//        var getQuestions = ServiceProvider.QuestionService.Get(q => q.Test.Id == test.Id);
-//        if (!getQuestions.IsSuccess)
-//        {
-//            MessageBox.Show(getQuestions.ErrorMessage);
-//            return;
-//        }
-
-//        var questions = getQuestions.Value.ToList();
-
-//        foreach (var question in questions)
-//        {
-//            var observableQuestion = new ObservableQuestion(question);
-
-//            var getAnswerOption = ServiceProvider.AnswerOptionService.Get(o => o.Question.Id == question.Id);
-//            if (!getAnswerOption.IsSuccess)
-//            {
-//                MessageBox.Show(getAnswerOption.ErrorMessage);
-//                return;
-//            }
-
-//            var answerOptions = getAnswerOption.Value.ToList();
-
-//            foreach (var answerOption in answerOptions)
-//            {
-//                var observableAnswerOption = new ObservableAnswerOption(answerOption, null);
-
-//                observableQuestion.AnswerOptions.Add(observableAnswerOption);
-//            }
-
-//            Test.Questions.Add(observableQuestion);
-//        }
-
-//        var getGroups = ServiceProvider.StudentGroupService.Get();
-//        if (!getGroups.IsSuccess)
-//        {
-//            MessageBox.Show("При завантажені груп виникла помилка");
-//            Trace.WriteLine(getGroups.ErrorMessage);
-//            return;
-//        }
-
-//        StudentGroups = new ObservableCollection<StudentGroup>(getGroups.Value);
-
-//        var currentTest = context.CurrentTest!;
-//        if (currentTest.HasTimer)
-//        {
-//            TimeLimit = new DateTime(currentTest.TimeLimit!.Value.Ticks).ToLocalTime();
-//        }
-
-//        SelectedStudentGroup = currentTest.StudentGroup;
-//        SelectedTestStatus = currentTest.Status;
-//        SelectedQuestion = Test.Questions.First();
-//    }
-
-//    public int SelectedQuestionNumber => SelectedQuestion != null ? Test.Questions.IndexOf(SelectedQuestion) + 1 : 0;
-//    public bool IsSelectedQuestionFirst => SelectedQuestion != null && Test.Questions.IndexOf(SelectedQuestion) == 0;
-//    public bool IsSelectedQuestionLast => SelectedQuestion != null && Test.Questions.IndexOf(SelectedQuestion) + 1 == Test.Questions.Count;
-//    public bool IsSelectedQuestionNotFirst => !IsSelectedQuestionFirst;
-//    public bool IsSelectedQuestionNotLast => !IsSelectedQuestionLast;
-
-//    partial void OnSelectedStudentGroupChanging(StudentGroup? value)
-//    {
-//        if (value != null && Test != null)
-//        {
-//            Test.StudentGroup = value;
-//        }
-//    }
-
-//    partial void OnSelectedTestStatusChanged(TestStatus? value)
-//    {
-//        if (value != null && Test != null)
-//        {
-//            Test.Status = value.Value;
-//        }
-//    }
-
-//    [RelayCommand]
-//    private void AddQuestion()
-//    {
-//        var question = CreateQuestion();
-//        Test.Questions.Add(new ObservableQuestion(question));
-//        SelectedQuestion = Test.Questions.LastOrDefault();
-//    }
+        QuestionTypes = new ObservableCollection<QuestionType>((QuestionType[])Enum.GetValues(typeof(QuestionType)));
+        TestStatuses = new ObservableCollection<TestStatus>((TestStatus[])Enum.GetValues(typeof(TestStatus)));
+        SelectedTestStatus = TestStatuses.First();
 
 
-//    [RelayCommand]
-//    private void RemoveQuestion()
-//    {
-//        if (Test.Questions.Count <= 1 || SelectedQuestion == null)
-//        {
-//            return;
-//        }
+        if (!TryGetObservableTest(out var test) || !TryGetObservableStudentGroups(out var studentGroups))
+        {
+            Test = null!;
+            Back();
+            return;
+        }
 
-//        var removeQuestion = ServiceProvider.QuestionService.Remove(q => q.Id == SelectedQuestion.Model.Id);
-//        if (!removeQuestion.IsSuccess)
-//        {
-//            MessageBox.Show("При видалені питання виникла помилка");
-//            Trace.WriteLine(removeQuestion.ErrorMessage);
-//            return;
-//        }
+        Test = test;
+        StudentGroups = studentGroups;
 
-//        Test.Questions.Remove(SelectedQuestion);
-//        SelectedQuestion = Test.Questions.LastOrDefault();
-//    }
+        SelectedStudentGroup = StudentGroups.First(g => g.StudentGroupId == Test.StudentGroup.StudentGroupId);
+        SelectedTestStatus = Test.Status;
+        SelectedQuestion = Test.Questions.First();
+    }
 
-//    [RelayCommand]
-//    private void Next()
-//    {
-//        if (Test.Questions.Count == 0 || SelectedQuestion == null)
-//        {
-//            SelectedQuestion = Test.Questions.First();
-//            return;
-//        }
+    public int SelectedQuestionNumber => SelectedQuestion != null ? Test.Questions.IndexOf(SelectedQuestion) + 1 : 0;
+    public bool IsSelectedQuestionFirst => SelectedQuestion != null && Test.Questions.IndexOf(SelectedQuestion) == 0;
+    public bool IsSelectedQuestionLast => SelectedQuestion != null && Test.Questions.IndexOf(SelectedQuestion) + 1 == Test.Questions.Count;
+    public bool IsSelectedQuestionNotFirst => !IsSelectedQuestionFirst;
+    public bool IsSelectedQuestionNotLast => !IsSelectedQuestionLast;
 
-//        SelectedQuestion = Test.Questions[Test.Questions.IndexOf(SelectedQuestion) + 1];
-//    }
+    partial void OnSelectedStudentGroupChanging(ObservableStudentGroup? value)
+    {
+        if (value != null && Test != null)
+        {
+            Test.StudentGroup = value;
+        }
+    }
 
-//    [RelayCommand]
-//    private void Previous()
-//    {
-//        if (Test.Questions.Count == 0 || SelectedQuestion == null)
-//        {
-//            SelectedQuestion = Test.Questions.First();
-//            return;
-//        }
+    partial void OnSelectedTestStatusChanged(TestStatus? value)
+    {
+        if (value != null && Test != null)
+        {
+            Test.Status = value.Value;
+        }
+    }
 
-//        SelectedQuestion = Test.Questions[Test.Questions.IndexOf(SelectedQuestion) - 1];
-//    }
+    [RelayCommand]
+    private void Next()
+    {
+        if (Test.Questions.Count == 0 || SelectedQuestion == null)
+        {
+            SelectedQuestion = Test.Questions.First();
+            return;
+        }
 
-//    [RelayCommand]
-//    private void AddAnswerOption()
-//    {
-//        if (Test.Questions.Count == 0 || SelectedQuestion == null)
-//        {
-//            return;
-//        }
+        SelectedQuestion = Test.Questions[Test.Questions.IndexOf(SelectedQuestion) + 1];
+    }
 
-//        var answerOption = CreateAnswerOption();
-//        SelectedQuestion.AnswerOptions.Add(new ObservableAnswerOption(answerOption, null));
-//        SelectedAnswerOption = SelectedQuestion.AnswerOptions.LastOrDefault();
-//    }
+    [RelayCommand]
+    private void Previous()
+    {
+        if (Test.Questions.Count == 0 || SelectedQuestion == null)
+        {
+            SelectedQuestion = Test.Questions.First();
+            return;
+        }
 
-//    [RelayCommand]
-//    private void RemoveAnswerOption()
-//    {
-//        if (SelectedQuestion == null || SelectedQuestion.AnswerOptions.Count <= 2 || SelectedAnswerOption == null)
-//        {
-//            return;
-//        }
+        SelectedQuestion = Test.Questions[Test.Questions.IndexOf(SelectedQuestion) - 1];
+    }
 
-//        var removeAnswerOption = ServiceProvider.AnswerOptionService.Remove(o => o.Id == SelectedAnswerOption.Model.Id);
-//        if (!removeAnswerOption.IsSuccess)
-//        {
-//            MessageBox.Show("При видалені варіанту відповіді виникла помилка");
-//            Trace.WriteLine(removeAnswerOption.ErrorMessage);
-//            return;
-//        }
+    [RelayCommand]
+    private void SaveTest()
+    {
+        MessageBox.Show("АЛЛАХУЙ");
+    }
 
-//        SelectedQuestion.AnswerOptions.Remove(SelectedAnswerOption);
-//        SelectedAnswerOption = SelectedQuestion.AnswerOptions.LastOrDefault();
-//    }
+    [RelayCommand]
+    private void AddQuestion()
+    {
+        if (!TryCreateObservableQuestion(out var observableQuestion))
+        {
+            return;
+        }
 
-//    [RelayCommand]
-//    private void SaveTest()
-//    {
-//        Save();
-//        MessageBox.Show("Тест було збережено");
-//    }
+        Test.Questions.Add(observableQuestion);
+        SelectedQuestion = Test.Questions.LastOrDefault();
+    }
 
-//    [RelayCommand]
-//    private void Back()
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    [RelayCommand]
+    private void RemoveQuestion()
+    {
+        if (Test.Questions.Count <= 1 || SelectedQuestion == null)
+        {
+            return;
+        }
 
-//        var answer = MessageBox.Show("При виході з редактору внесені зміни можуть бути втрачені!\nЗберегти зміни?", "Збереження даних", MessageBoxButton.YesNoCancel);
+        var removeQuestion = _questionService.RemoveById(SelectedQuestion.QuestionId);
+        if (!removeQuestion.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + removeQuestion.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
 
-//        switch (answer)
-//        {
-//            case MessageBoxResult.Cancel:
-//                return;
-//            case MessageBoxResult.Yes:
-//                Save();
-//                break;
-//            default:
-//                break;
-//        }
-        
-//        context.CurrentTest = null;
-//        context.CurrentState = AppState.TeacherTestBrowser;
-//    }
+        Test.Questions.Remove(SelectedQuestion);
+        SelectedQuestion = Test.Questions.LastOrDefault();
+    }
 
-//    private Question CreateQuestion()
-//    {
-//        var question = new Question()
-//        {
-//            Content = "",
-//            Type = QuestionType.SingleChoice,
-//            GradeValue = 0,
-//            Test = Test.Model
-//        };
+    [RelayCommand]
+    private void AddAnswerOption()
+    {
+        if (Test.Questions.Count == 0 || SelectedQuestion == null || !TryCreateObservableAnswerOption(out var answerOption))
+        {
+            return;
+        }
 
-//        var createQuestion = ServiceProvider.QuestionService.Add(question);
-//        if (!createQuestion.IsSuccess)
-//        {
-//            MessageBox.Show("При створені нового питання виникла помилка");
-//            Trace.WriteLine(createQuestion.ErrorMessage);
-//            return null!;
-//        }
+        SelectedQuestion.AnswerOptions.Add(answerOption);
+        SelectedAnswerOption = SelectedQuestion.AnswerOptions.LastOrDefault();
+    }
 
-//        return question;
-//    }
+    [RelayCommand]
+    private void RemoveAnswerOption()
+    {
+        if (SelectedQuestion == null || SelectedQuestion.AnswerOptions.Count <= 2 || SelectedAnswerOption == null)
+        {
+            return;
+        }
 
-//    private AnswerOption CreateAnswerOption()
-//    {
-//        var answerOption = new AnswerOption()
-//        {
-//            Content = "",
-//            Question = SelectedQuestion!.Model
-//        };
+        var removeAnswerOption = _answerOptionService.RemoveById(SelectedAnswerOption.AnswerOptionId);
+        if (!removeAnswerOption.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + removeAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
 
-//        var createanswerOption = ServiceProvider.AnswerOptionService.Add(answerOption);
-//        if (!createanswerOption.IsSuccess)
-//        {
-//            MessageBox.Show("При створені нового варіанту відповіді виникла помилка");
-//            Trace.WriteLine(createanswerOption.ErrorMessage);
-//            return null!;
-//        }
+        SelectedQuestion.AnswerOptions.Remove(SelectedAnswerOption);
+        SelectedAnswerOption = SelectedQuestion.AnswerOptions.LastOrDefault();
+    }
 
-//        return answerOption;
-//    }
+    [RelayCommand]
+    private void Back()
+    {
+        _sessionContext.CurrentTestId = null;
+        _sessionContext.CurrentState = AppState.TeacherTestBrowser;
+    }
 
-//    private void Save()
-//    {
+    // Service Logic?
 
-//        Test.SaveModel();
-//        foreach (var question in Test.Questions)
-//        {
-//            question.SaveModel();
+    private bool TryCreateQuestion(out Question newQuestion)
+    {
+        newQuestion = null!;
 
-//            foreach (var answerOption in question.AnswerOptions)
-//            {
-//                answerOption.IsTrue = answerOption.IsChecked;
-//                answerOption.SaveModel();
-//            }
-//        }
-//    }
-//}
+        var getTest = _testService.GetById(_sessionContext.CurrentTestId!.Value);
+        if (!getTest.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var test = getTest.Value;
+
+        newQuestion = new Question()
+        {
+            Content = "",
+            Type = QuestionType.SingleChoice,
+            GradeValue = 0,
+            Test = test
+        };
+
+        var createQuestion = _questionService.Add(newQuestion);
+        if (!createQuestion.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + createQuestion.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        if (!TryCreateAnswerOptions(newQuestion, out var answerOptions))
+        {
+            return false;
+        }
+
+        newQuestion.AnswerOptions = answerOptions;
+
+        return true;
+    }
+    private bool TryCreateAnswerOptions(Question question, out List<AnswerOption> answerOptions)
+    {
+        answerOptions =
+        [
+            new()
+            {
+                Content = string.Empty,
+                Question = question
+            },
+            new()
+            {
+                Content = string.Empty,
+                Question = question
+            },
+        ];
+
+        foreach (var answerOption in answerOptions)
+        {
+            var createAnswerOption = _answerOptionService.Add(answerOption);
+            if (!createAnswerOption.IsSuccess)
+            {
+                MessageBox.Show("Виникла критична помилка\n" + createAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
+        return true;
+    }
+    private bool TryCreateObservableQuestion(out ObservableQuestion observableQuestion)
+    {
+        observableQuestion = null!;
+
+        if (!TryCreateQuestion(out var question) || !TryGetObservableAnswerOptions(question, out var observableAnswersOptions))
+        {
+            return false;
+        }
+
+        observableQuestion = new ObservableQuestion(question)
+        {
+            AnswerOptions = observableAnswersOptions,
+        };
+
+        return true;
+    }
+
+    private bool TryCreateObservableAnswerOption(out ObservableAnswerOption observableAnswerOption)
+    {
+        observableAnswerOption = null!;
+
+        if (!TryGetSelectedQuestion(out var selectedQuestion))
+        {
+            return false;
+        }
+
+        var answerOption = new AnswerOption()
+        {
+            Content = string.Empty,
+            Question = selectedQuestion
+        };
+
+        var add = _answerOptionService.Add(answerOption);
+        if (!add.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + add.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        observableAnswerOption = new ObservableAnswerOption(answerOption);
+
+        return true;
+    }
+
+    private bool TryGetCurrentUser(out User user)
+    {
+        user = null!;
+
+        if (_sessionContext.CurrentUserId == null)
+        {
+            MessageBox.Show("Поточний користувач не встановлений", "Помилка наявності користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var getUser = _userService.GetById(_sessionContext.CurrentUserId.Value);
+        if (!getUser.IsSuccess)
+        {
+            MessageBox.Show("Неможливо завантажити дані користувача", "Помилка отримання користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        user = getUser.Value;
+
+        if (user == null)
+        {
+            MessageBox.Show("Неможливо завантажити тести без користувача.\n", "Помилка завантаження тестів", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+        else if (user.Role != UserRole.Teacher)
+        {
+            MessageBox.Show("Користувач не є викладачем.\n", "Помилка ролі користувача", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryGetSelectedQuestion(out Question question)
+    {
+        question = null!;
+
+        var getSelectedQuestion = _questionService.GetById(SelectedQuestion!.QuestionId);
+        if (!getSelectedQuestion.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getSelectedQuestion.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        question = getSelectedQuestion.Value;
+
+        return true;
+    }
+
+    private bool TryGetUserAnswer(AnswerOption answerOption, out UserAnswer? userAnswer)
+    {
+        userAnswer = null!;
+
+        var getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
+
+        if (!getUserAnswers.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getUserAnswers.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        userAnswer = getUserAnswers.Value.FirstOrDefault();
+
+        return true;
+    }
+
+    private bool TryGetCurrentTest(out Test test)
+    {
+        test = null!;
+
+        var getTest = _testService.GetById(_sessionContext.CurrentTestId!.Value);
+        if (!getTest.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        test = getTest.Value;
+        return true;
+    }
+    private bool TryGetObservableStudentGroups(out ObservableCollection<ObservableStudentGroup> observableStudentGroups)
+    {
+        observableStudentGroups = [];
+
+        var getGroups = _studentGroupService.Get();
+        if (!getGroups.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getGroups.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var studentGroups = getGroups.Value;
+
+        if (!studentGroups.Any())
+        {
+            MessageBox.Show("Не існує жодної групи", "Студентських груп не існує", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        observableStudentGroups = new ObservableCollection<ObservableStudentGroup>(studentGroups.Select(g => new ObservableStudentGroup(g)));
+        return true;
+    }
+
+    private bool TryGetObservableTest(out ObservableTest observableTest)
+    {
+        observableTest = null!;
+
+        var getCurrentTest = _testService.GetById(_sessionContext.CurrentTestId!.Value);
+        if (!getCurrentTest.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getCurrentTest.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var test = getCurrentTest.Value;
+
+        observableTest = new ObservableTest(test);
+
+        if (!TryGetObservableQuestions(test, out var observableQuestions))
+        {
+            return false;
+        }
+
+        observableTest.Questions = observableQuestions;
+        return true;
+    }
+
+    private bool TryGetObservableQuestions(Test test, out ObservableCollection<ObservableQuestion> observableQuestions)
+    {
+        observableQuestions = [];
+
+        var getQuestions = _questionService.Get(q => q.Test.Id == test.Id);
+        if (!getQuestions.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getQuestions.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var questions = getQuestions.Value.ToList();
+
+        foreach (var question in questions)
+        {
+            var observableQuestion = new ObservableQuestion(question);
+
+            if (!TryGetObservableAnswerOptions(question, out var observableAnswerOptions))
+            {
+                return false;
+            }
+
+            observableQuestion.AnswerOptions = observableAnswerOptions;
+
+            observableQuestions.Add(observableQuestion);
+        }
+
+        return true;
+    }
+
+    private bool TryGetObservableAnswerOptions(Question question, out ObservableCollection<ObservableAnswerOption> observableAnswerOptions)
+    {
+        observableAnswerOptions = [];
+
+        var getAnswerOption = _answerOptionService.Get(o => o.Question.Id == question.Id);
+        if (!getAnswerOption.IsSuccess)
+        {
+            MessageBox.Show("Виникла критична помилка\n" + getAnswerOption.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            return false;
+        }
+
+        var answerOptions = getAnswerOption.Value.ToList();
+
+        foreach (var answerOption in answerOptions)
+        {
+            if (!TryGetUserAnswer(answerOption, out var userAnswer))
+            {
+                return false;
+            }
+            var isChecked = userAnswer?.IsSelected ?? false;
+
+            var observableAnswerOption = new ObservableAnswerOption(answerOption, isChecked);
+
+            observableAnswerOptions.Add(observableAnswerOption);
+        }
+
+        return true;
+    }
+
+}

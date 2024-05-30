@@ -44,9 +44,9 @@
         </DataTemplate>
         
         <!--Редактор тестів-->
-        <!--<DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
+        <DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
             <local:TestEditorView IsTabStop="False"/>
-        </DataTemplate>-->
+        </DataTemplate>
 
         <!--Selectors-->
         <selectors:AppStateTemplateSelector x:Key="AppStateTemplateSelector"
@@ -56,12 +56,8 @@
                                             
                                             TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
                                             TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
-                                            
-                                            />
-        <!--TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
-
-
-TestEditorTemplate="{StaticResource TestEditorTemplate}"-->
+                                            TestEditorTemplate="{StaticResource TestEditorTemplate}"/>
+        <!--TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"-->
     </Window.Resources>
     <Grid>
         <ContentControl Content="{Binding CurrentState}" 

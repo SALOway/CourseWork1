@@ -5,8 +5,10 @@ namespace BLL.Interfaces;
 
 public interface IQuestionService
 {
-    public Result Add(Question question);
-    public Result<IQueryable<Question>> Get(Expression<Func<Question, bool>>? predicate = null);
-    public Result Update(Question question);
-    public Result Remove(Expression<Func<Question, bool>> predicate);
+    Result Add(Question question);
+    Result<Question> GetById(Guid id);
+    Result<IQueryable<Question>> Get(Expression<Func<Question, bool>>? predicate = null);
+    Result Update(Question question);
+    Result RemoveById(Guid id);
+    Result Remove(Expression<Func<Question, bool>> predicate);
 }

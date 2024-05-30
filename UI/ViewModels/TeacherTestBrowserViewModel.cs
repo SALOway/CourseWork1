@@ -50,7 +50,7 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
     private void LoadTests()
     {
-        if (!TryGetCurrentUser(out var user) || !TryGetObservableTests(user, out var tests))
+        if (!TryGetObservableTests(out var tests))
         {
             LogOut();
             return;
@@ -156,9 +156,9 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
         newTest = new Test()
         {
             Name = string.Empty,
-            Creator = user,
             Status = TestStatus.Draft,
             MaxAttempts = 1,
+            Creator = user,
             StudentGroup = group
         };
 
@@ -253,6 +253,8 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
             return false;
         }
 
+        studentGroup = group;
+
         return true;
     }
 
@@ -289,7 +291,7 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
         return true;
     }
 
-    private bool TryGetObservableTests(User user, out ObservableCollection<ObservableTest> observableTests)
+    private bool TryGetObservableTests(out ObservableCollection<ObservableTest> observableTests)
     {
         observableTests = [];
 
@@ -315,22 +317,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
 
             observableTests.Add(observableTest);
         }
-
-        return true;
-    }
-
-    private bool TryGetLastUserAttempt(Test test, out TestAttempt? lastTestAttempt)
-    {
-        lastTestAttempt = null;
-
-        var getTestAttempt = _testAttemptService.GetLastAttempt(_sessionContext.CurrentUserId!.Value, test.Id);
-        if (!getTestAttempt.IsSuccess)
-        {
-            MessageBox.Show("Виникла критична помилка\n" + getTestAttempt.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-            return false;
-        }
-
-        lastTestAttempt = getTestAttempt.Value;
 
         return true;
     }
