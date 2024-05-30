@@ -40,6 +40,10 @@ public class TestService(IGenericRepository<Test> testRepository) : ITestService
     {
         return _repository.Update(test);
     }
+    public Result RemoveById(Guid id)
+    {
+        return _repository.Remove(t => t.Id == id);
+    }
     public Result Remove(Expression<Func<Test, bool>> predicate)
     {
         return _repository.Remove(predicate);

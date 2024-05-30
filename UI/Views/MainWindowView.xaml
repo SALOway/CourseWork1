@@ -12,30 +12,37 @@
         WindowState="Maximized">
     <Window.Resources>
         <!--View Templates-->
+        
         <!--Вхід в систему-->
         <DataTemplate x:Key="LogInTemplate" DataType="{x:Type local:LogInView}">
             <local:LogInView IsTabStop="False"/>
         </DataTemplate>
+        
         <!--Браузер тестів студента-->
         <DataTemplate x:Key="StudentTestBrowserTemplate" DataType="{x:Type local:StudentTestBrowserView}">
             <local:StudentTestBrowserView IsTabStop="False"/>
         </DataTemplate>
+        
         <!--Деталі тесту-->
         <DataTemplate x:Key="TestDetailsTemplate" DataType="{x:Type local:TestDetailsView}">
             <local:TestDetailsView IsTabStop="False"/>
         </DataTemplate>
+        
         <!--Проходження тесту-->
         <!--<DataTemplate x:Key="TestAttemptTemplate" DataType="{x:Type local:TestAttemptView}">
             <local:TestAttemptView IsTabStop="False"/>
         </DataTemplate>-->
+        
         <!--Меню вчителя-->
-        <!--<DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
+        <DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
             <local:TeacherMenuView IsTabStop="False"/>
-        </DataTemplate>-->
+        </DataTemplate>
+        
         <!--Браузер тестів вчителя-->
-        <!--<DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
+        <DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
             <local:TeacherTestBrowserView IsTabStop="False"/>
-        </DataTemplate>-->
+        </DataTemplate>
+        
         <!--Редактор тестів-->
         <!--<DataTemplate x:Key="TestEditorTemplate" DataType="{x:Type local:TestEditorView}">
             <local:TestEditorView IsTabStop="False"/>
@@ -46,10 +53,14 @@
                                             LogInTemplate="{StaticResource LogInTemplate}"
                                             StudentTestBrowserTemplate="{StaticResource StudentTestBrowserTemplate}"
                                             TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
+                                            
+                                            TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
+                                            TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
+                                            
                                             />
         <!--TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
-TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
-TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
+
+
 TestEditorTemplate="{StaticResource TestEditorTemplate}"-->
     </Window.Resources>
     <Grid>

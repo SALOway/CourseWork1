@@ -4,15 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UI.Views" 
-             xmlns:viewmodels="clr-namespace:UI.ViewModels" 
+             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TeacherTestBrowserViewModel}"
              xmlns:models="clr-namespace:UI.ObservableModels"
              mc:Ignorable="d" 
              d:DesignHeight="640" d:DesignWidth="1208">
-    <!--d:DataContext="{d:DesignInstance Type=viewmodels:TeacherTestBrowserViewModel}"-->
     <UserControl.Resources>
-        <!--<BooleanToVisibilityConverter x:Key="BoolToVis"/>-->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!--<DataTemplate x:Key="TestItemTempltate" DataType="models:ObservableTest">
+        <DataTemplate x:Key="TestItemTempltate" DataType="models:ObservableTest">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -34,13 +33,13 @@
 
                 <StackPanel Grid.Column="2">
                     <Label Content="{Binding Status}" ContentStringFormat="Статус тесту: {0}"  FontSize="24"/>
-                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0}"  FontSize="24"
+                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0:hh:mm:ss dd.MM.yyyy}"  FontSize="24"
                            Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="3">
-                    <Label Content="{Binding TimeLimit}" ContentStringFormat="Ліміт часу: {0}"  FontSize="24"
-                           Visibility="{Binding HasTimer, Converter={StaticResource BoolToVis}}"/>
+                    <Label Content="{Binding TimeLimit}" ContentStringFormat="Ліміт часу: {0:hh:mm:ss}"  FontSize="24"
+                           Visibility="{Binding HasTimeLimit, Converter={StaticResource BoolToVis}}"/>
                     <Label Content="{Binding RequiredGrade}" ContentStringFormat="Прохідний бал: {0}"  FontSize="24"
                            Visibility="{Binding HasRequiredGrade, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
@@ -50,27 +49,29 @@
                     <Label Content="{Binding MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"/>
                 </StackPanel>
 
-                <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0}" FontSize="24"
+                <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0:hh:mm:ss dd.MM.yyyy}" FontSize="24"
                        Grid.Column="5"/>
             </Grid>
-        </DataTemplate>-->
+        </DataTemplate>
     </UserControl.Resources>
 
     <Grid>
         <!--Кнопка назад-->
-        <!--<Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
-                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>-->
+        <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>
 
-        <!--<StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
-                --><!--Пошукова строка--><!--
+                
+                <!--Пошукова строка-->
                 <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" FontSize="24"
                  MinWidth="250" Margin="0,0,5,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
                     </TextBox.InputBindings>
                 </TextBox>
-                --><!--Кнопка пошуку--><!--
+                
+                <!--Кнопки дій-->
                 <Button Content="Пошук" Command="{Binding SearchCommand}" FontSize="24"
                         Margin="0,0,5,0" Padding="25,5,25,5"/>
                 <Button Content="Створити" Command="{Binding CreateNewTestCommand}" FontSize="24" 
@@ -81,13 +82,13 @@
                         Margin="0,0,5,0" Padding="5"/>
             </StackPanel>
 
-            --><!--Список відфільтррованих тестів--><!--
+            <!--Список відфільтррованих тестів-->
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
                       ItemTemplate="{StaticResource TestItemTempltate}"
                       FontSize="24"
                       HorizontalContentAlignment="Stretch" HorizontalAlignment="Center" VerticalAlignment="Center">
              
             </ListView>
-        </StackPanel>-->
+        </StackPanel>
     </Grid>
 </UserControl>
