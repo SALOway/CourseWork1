@@ -2,33 +2,37 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using UI.Enums;
+using UI.Interfaces;
 
 namespace UI.ViewModels;
 
-//public partial class TeacherMenuViewModel : ObservableObject
-//{
-//    [RelayCommand]
-//    private static void LogOut()
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+public partial class TeacherMenuViewModel : ObservableObject
+{
+    private readonly ISessionContext _sessionContext;
 
-//        context.CurrentUser = null;
-//        context.CurrentState = AppState.LogIn;
-//    }
+    public TeacherMenuViewModel(ISessionContext sessionContext)
+    {
+        _sessionContext = sessionContext;
+    }
 
-//    [RelayCommand]
-//    private void OpenTestBrowser()
-//    {
-//        var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    [RelayCommand]
+    private void LogOut()
+    {
+        _sessionContext.CurrentUserId = null;
+        _sessionContext.CurrentState = AppState.LogIn;
+    }
 
-//        context.CurrentState = AppState.TeacherTestBrowser;
-//    }
+    [RelayCommand]
+    private void OpenTestBrowser()
+    {
+        _sessionContext.CurrentState = AppState.TeacherTestBrowser;
+    }
 
-//    //[RelayCommand]
-//    //private void OpenStudentBrowser()
-//    //{
-//    //    var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
+    //[RelayCommand]
+    //private void OpenStudentBrowser()
+    //{
+    //    var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
 
-//    //    context.CurrentState = AppState.StudentBrowser;
-//    //}
-//}
+    //    context.CurrentState = AppState.StudentBrowser;
+    //}
+}
