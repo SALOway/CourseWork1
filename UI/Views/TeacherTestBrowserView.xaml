@@ -33,7 +33,7 @@
 
                 <StackPanel Grid.Column="2">
                     <Label Content="{Binding Status}" ContentStringFormat="Статус тесту: {0}"  FontSize="24"/>
-                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0:hh:mm:ss dd.MM.yyyy}"  FontSize="24"
+                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0:HH:mm:ss dd.MM.yyyy}"  FontSize="24"
                            Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
@@ -49,7 +49,7 @@
                     <Label Content="{Binding MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"/>
                 </StackPanel>
 
-                <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0:hh:mm:ss dd.MM.yyyy}" FontSize="24"
+                <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0:HH:mm:ss dd.MM.yyyy}" FontSize="24"
                        Grid.Column="5"/>
             </Grid>
         </DataTemplate>
