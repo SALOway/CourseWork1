@@ -49,12 +49,12 @@
                    Visibility="{Binding Test.HasRequiredGrade, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
 
             <Label Content="{Binding Test.TimeLimit, FallbackValue='NULL'}"
-                   ContentStringFormat="Час на проходження: {0}"
+                   ContentStringFormat="Час на проходження: {0:HH:mm:ss}"
                    FontSize="24"
                    Visibility="{Binding Test.HasTimeLimit, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
             
             <Label Content="{Binding LastTestAttempt.LeftoverTime, FallbackValue='NULL'}"
-                   ContentStringFormat="Залишковий час після проходження: {0:hh\:mm\:ss}"
+                   ContentStringFormat="Залишковий час після проходження: {0:HH:mm:ss}"
                    FontSize="24"
                    Visibility="{Binding LastTestAttempt.HasLeftoverTime, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
 

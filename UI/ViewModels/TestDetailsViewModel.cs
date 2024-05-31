@@ -1,4 +1,5 @@
-﻿using BLL.Interfaces;
+﻿using BLL;
+using BLL.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core.Enums;
@@ -65,15 +66,40 @@ public partial class TestDetailsViewModel : ObservableObject
 
         LastTestAttempt = lastTestAttempt != null ? new ObservableTestAttempt(lastTestAttempt) : null;
 
+        if (LastTestAttempt != null && LastTestAttempt.Status == TestAttemptStatus.InProcess)
+        {
+            if (Test.HasTermin)
+            {
+                var termin = Test.Termin!.Value;
+                var difference = termin.Ticks - DateTime.UtcNow.Ticks;
+                if (difference > 0)
+                {
+                    LastTestAttempt.Status = TestAttemptStatus.Expired;
+                    LastTestAttempt.HasGrade = true;
+                    LastTestAttempt.EndedAt = Test.Termin;
+                    LastTestAttempt.Save(_testAttemptService, _questionService);
+                }
+            }
+
+            if (Test.HasTimeLimit)
+            {
+                var timelimit = Test.TimeLimit!.Value.Ticks;
+                var start = LastTestAttempt.StartedAt.Ticks;
+                var current = DateTime.UtcNow.Ticks;
+                var difference = current - start;
+                var timeout = timelimit - difference;
+                if (timeout <= 0)
+                {
+                    LastTestAttempt.Status = TestAttemptStatus.Failed;
+                    LastTestAttempt.HasGrade = true;
+                    LastTestAttempt.EndedAt = DateTime.UtcNow;
+                    LastTestAttempt.Save(_testAttemptService, _questionService);
+                }
+            }
+        }
+
         CanContinue = LastTestAttempt?.Status == TestAttemptStatus.InProcess;
         CanStart = !CanContinue && (!Test.HasAttempts || Test.AttemptsCount < Test.MaxAttempts);
-
-        if (Test.HasTermin && LastTestAttempt?.Status != TestAttemptStatus.InProcess)
-        {
-            var termin = Test.Termin!.Value;
-            var difference = termin.Ticks - DateTime.UtcNow.Ticks;
-            CanStart = difference > 0;
-        }
 
         _timer = LastTestAttempt != null && (Test.HasTermin || Test.HasTimeLimit) ? new DispatcherTimer() : null;
 
@@ -286,7 +312,15 @@ public partial class TestDetailsViewModel : ObservableObject
     {
         userAnswer = null!;
 
-        var getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
+        Result<IQueryable<UserAnswer>> getUserAnswers;
+        if (LastTestAttempt != null)
+        {
+            getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId && a.TestAttempt.Id == LastTestAttempt!.TestAttemptId);
+        }
+        else
+        {
+            getUserAnswers = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId);
+        }
 
         if (!getUserAnswers.IsSuccess)
         {
@@ -326,15 +360,74 @@ public partial class TestDetailsViewModel : ObservableObject
         return true;
     }
 
+    private void Timer_Tick(object sender, EventArgs e)
+    {
+        if (LastTestAttempt == null)
+        {
+            return;
+        }
+
+        if (LastTestAttempt.Status == TestAttemptStatus.InProcess)
+        {
+            if (Test.HasTermin)
+            {
+                var termin = Test.Termin!.Value;
+                var difference = termin.Ticks - DateTime.UtcNow.Ticks;
+                if (difference > 0)
+                {
+                    LastTestAttempt.Status = TestAttemptStatus.Expired;
+                    LastTestAttempt.HasGrade = true;
+                    LastTestAttempt.EndedAt = Test.Termin;
+                    LastTestAttempt.Save(_testAttemptService, _questionService);
+                }
+            }
+
+            if (Test.HasTimeLimit)
+            {
+                var timelimit = Test.TimeLimit!.Value.Ticks;
+                var start = LastTestAttempt.StartedAt.Ticks;
+                var current = DateTime.UtcNow.Ticks;
+                var difference = current - start;
+                var timeout = timelimit - difference;
+                if (timeout <= 0)
+                {
+                    LastTestAttempt.Status = TestAttemptStatus.Failed;
+                    LastTestAttempt.HasGrade = true;
+                    LastTestAttempt.EndedAt = DateTime.UtcNow;
+                    LastTestAttempt.Save(_testAttemptService, _questionService);
+                }
+            }
+        }
+
+        CanContinue = LastTestAttempt?.Status == TestAttemptStatus.InProcess;
+        CanStart = !CanContinue && (!Test.HasAttempts || Test.AttemptsCount < Test.MaxAttempts);
+    }
+
     private void Termin_Tick(object? sender, EventArgs e)
     {
+        if (LastTestAttempt == null)
+        {
+            return;
+        }
+
         var termin = Test.Termin!.Value;
         var difference = termin.Ticks - DateTime.UtcNow.Ticks;
-        CanStart = difference > 0;
+        if (difference > 0)
+        {
+            LastTestAttempt.Status = TestAttemptStatus.Expired;
+            LastTestAttempt.HasGrade = true;
+            LastTestAttempt.EndedAt = Test.Termin;
+            LastTestAttempt.Save(_testAttemptService, _questionService);
+        }
     }
 
     private void TimeLimit_Tick(object? sender, EventArgs e) 
     {
+        if (LastTestAttempt == null)
+        {
+            return;
+        }
+
         var timeLimit = Test.TimeLimit!.Value;
         var startedAt = LastTestAttempt!.StartedAt;
         var difference = DateTime.UtcNow.Ticks - startedAt.Ticks + timeLimit.Ticks;

@@ -46,11 +46,11 @@ public partial class ObservableTestAttempt : ObservableObject
         StartedAt = testAttempt.StartedAt.ToLocalTime();
         EndedAt = testAttempt.EndedAt.HasValue ? testAttempt.EndedAt.Value.ToLocalTime() : testAttempt.EndedAt;
         HasLeftoverTime = testAttempt.HasLeftoverTime;
-        LeftoverTime = testAttempt.LeftoverTime.HasValue ? testAttempt.LeftoverTime.Value.ToLocalTime() : testAttempt.LeftoverTime;
+        LeftoverTime = testAttempt.LeftoverTime.HasValue ? testAttempt.LeftoverTime.Value : testAttempt.LeftoverTime;
         Status = testAttempt.Status;
         HasGrade = testAttempt.HasGrade;
         Grade = testAttempt.Grade;
-        AmountOfAnsweredQuestions = testAttempt.Answers.Select(a => a.Question.Id).ToHashSet().Count;
+        AmountOfAnsweredQuestions = testAttempt.Answers.Where(a => a.IsSelected).Select(a => a.Question.Id).ToHashSet().Count;
     }
 
     public void Save(ITestAttemptService testAttemptService, IQuestionService questionService)
@@ -79,7 +79,7 @@ public partial class ObservableTestAttempt : ObservableObject
                 return;
             }
 
-            var questions = getQuestions.Value;
+            var questions = getQuestions.Value.ToList();
 
             int grade = 0;
             foreach (var question in questions)

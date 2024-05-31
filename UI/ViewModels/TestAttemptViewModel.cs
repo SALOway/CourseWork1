@@ -62,12 +62,27 @@ public partial class TestAttemptViewModel : ObservableObject
         if (TestAttempt.Test.HasTimeLimit)
         {
             HasTimer = true;
-            var timePastFromStart = DateTime.Now - TestAttempt.StartedAt;
-            Timeout = (TestAttempt.Test!.TimeLimit!.Value - timePastFromStart).TimeOfDay;
-            _timer = new DispatcherTimer();
-            _timer.Tick += Timer_Tick;
-            _timer.Interval = TimeSpan.FromMilliseconds(100);
-            _timer.Start();
+            var timeDifference = DateTime.Now.Ticks - TestAttempt.StartedAt.Ticks;
+            var timelimit = TestAttempt.Test.TimeLimit!.Value.Ticks;
+            if (timeDifference > timelimit)
+            {
+                TestAttempt.EndedAt = DateTime.Now;
+                TestAttempt.Status = TestAttemptStatus.Failed;
+                TestAttempt.HasGrade = true;
+
+                Save();
+
+                _sessionContext.CurrentTestAttemptId = null;
+                _sessionContext.CurrentState = AppState.TestDetails;
+            }
+            else
+            {
+                Timeout = TimeSpan.FromTicks(timelimit - timeDifference);
+                _timer = new DispatcherTimer();
+                _timer.Tick += Timer_Tick;
+                _timer.Interval = TimeSpan.FromMilliseconds(100);
+                _timer.Start();
+            }
         }
     }
 
@@ -123,15 +138,17 @@ public partial class TestAttemptViewModel : ObservableObject
                 return;
             }
         }
-
-        answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест?", "Завершити тест?", MessageBoxButton.YesNo);
-        if (answer == MessageBoxResult.No)
+        else
         {
-            return;
+            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест?", "Завершити тест?", MessageBoxButton.YesNo);
+            if (answer == MessageBoxResult.No)
+            {
+                return;
+            }
         }
 
         _timer?.Stop();
-        TestAttempt.EndedAt = DateTime.UtcNow;
+        TestAttempt.EndedAt = DateTime.Now;
         TestAttempt.Status = TestAttemptStatus.Completed;
         TestAttempt.HasGrade = true;
         Save();
@@ -162,12 +179,24 @@ public partial class TestAttemptViewModel : ObservableObject
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
-        var timePastFromStart = DateTime.Now - TestAttempt.StartedAt;
-        Timeout = (TestAttempt.Test!.TimeLimit!.Value - timePastFromStart).TimeOfDay;
-        if (Timeout <= TimeSpan.Zero)
+        var timeDifference = DateTime.Now.Ticks - TestAttempt.StartedAt.Ticks;
+        var timelimit = TestAttempt.Test!.TimeLimit!.Value.Ticks;
+        if (timeDifference > timelimit)
         {
-            Timeout = TimeSpan.Zero;
             _timer!.Stop();
+
+            TestAttempt.EndedAt = DateTime.Now;
+            TestAttempt.Status = TestAttemptStatus.Failed;
+            TestAttempt.HasGrade = true;
+
+            Save();
+
+            _sessionContext.CurrentTestAttemptId = null;
+            _sessionContext.CurrentState = AppState.TestDetails;
+        }
+        else
+        {
+            Timeout = TimeSpan.FromTicks(timelimit - timeDifference);
         }
     }
 
@@ -179,7 +208,6 @@ public partial class TestAttemptViewModel : ObservableObject
             TestAttempt.LeftoverTime = new DateTime() + Timeout;
         }
 
-        TestAttempt.Save(_testAttemptService, _questionService);
         foreach (var observableQuestion in TestAttempt.Test!.Questions)
         {
             foreach (var observableAnswerOption in observableQuestion.AnswerOptions)
@@ -218,6 +246,7 @@ public partial class TestAttemptViewModel : ObservableObject
                 }
             }
         }
+        TestAttempt.Save(_testAttemptService, _questionService);
     }
 
     private bool TryCreateUserAnswer(AnswerOption answerOption, bool isChecked)
@@ -359,7 +388,7 @@ public partial class TestAttemptViewModel : ObservableObject
     {
         userAnswer = null;
 
-        var get = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.User.Id == _sessionContext.CurrentUserId!.Value);
+        var get = _userAnswerService.Get(a => a.AnswerOption.Id == answerOption.Id && a.TestAttempt.Id == _sessionContext.CurrentTestAttemptId && a.User.Id == _sessionContext.CurrentUserId!.Value);
         if (!get.IsSuccess)
         {
             MessageBox.Show("Виникла критична помилка\n" + get.ErrorMessage, "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
