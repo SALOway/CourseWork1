@@ -8,7 +8,7 @@
         xmlns:selectors="clr-namespace:UI.Selectors"
         xmlns:context="clr-namespace:UI.ObservableModels"
         mc:Ignorable="d"
-        Title="Шедевропрограма" Height="450" Width="800"
+        Title="Квізлер" Height="450" Width="800"
         WindowState="Maximized">
     <Window.Resources>
         <!--View Templates-->

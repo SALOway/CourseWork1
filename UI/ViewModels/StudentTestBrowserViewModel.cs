@@ -34,6 +34,7 @@ public partial class StudentTestBrowserViewModel : ObservableObject
     private ObservableTest? _selectedTest;
 
     public bool AnyTest => FilteredTests.Any();
+    public bool NoAnyTest => !AnyTest;
 
     public StudentTestBrowserViewModel(ISessionContext sessionContext, IUserService userService, ITestService testService, IQuestionService questionService, IAnswerOptionService answerOptionService, IUserAnswerService userAnswerService, ITestAttemptService testAttemptService)
     {

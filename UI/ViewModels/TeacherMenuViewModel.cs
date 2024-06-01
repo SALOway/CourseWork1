@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Windows;
 using UI.Enums;
 using UI.Interfaces;
 
@@ -27,12 +26,4 @@ public partial class TeacherMenuViewModel : ObservableObject
     {
         _sessionContext.CurrentState = AppState.TeacherTestBrowser;
     }
-
-    //[RelayCommand]
-    //private void OpenStudentBrowser()
-    //{
-    //    var context = (MainWindowViewModel)Application.Current.MainWindow.DataContext;
-
-    //    context.CurrentState = AppState.StudentBrowser;
-    //}
 }

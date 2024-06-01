@@ -89,8 +89,11 @@
                       HorizontalAlignment="Center" VerticalAlignment="Center"
                       HorizontalContentAlignment="Stretch" 
                       Visibility="{Binding AnyTest, Converter={StaticResource BoolToVis}}">
-             
             </ListView>
+
+            <Label Content="Не знайдено жодного тесту" FontSize="48"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,0"
+                   Visibility="{Binding NoAnyTest, Converter={StaticResource BoolToVis}}"/>
         </StackPanel>
     </Grid>
 </UserControl>

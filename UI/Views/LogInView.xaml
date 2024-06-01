@@ -21,11 +21,11 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Label Content="Log In" FontSize="48" 
+            <Label Content="Вхід" FontSize="48" 
                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10"
                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
             
-            <Label Content="Username:" FontSize="24"
+            <Label Content="Логін:" FontSize="24"
                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Padding="0"
                    Grid.Row="1" Grid.Column="0"/>
             <TextBox Text="{Binding Username,
@@ -38,7 +38,7 @@
                      Grid.Row="1" Grid.Column="1" 
                      TabIndex="0"/>
 
-            <Label Content="Password:" FontSize="24"
+            <Label Content="Пароль:" FontSize="24"
                    HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Padding="0"
                    Grid.Row="2" Grid.Column="0"/>
             <TextBox Text="{Binding Password,
@@ -51,7 +51,7 @@
                      Grid.Row="2" Grid.Column="1" 
                      TabIndex="1"/>
 
-            <Button Content="Log In" FontSize="24" 
+            <Button Content="Увійти" FontSize="24" 
                     Command="{Binding LogInCommand}"
                     VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="125" Margin="0,20,0,0" Padding="15,3,15,3" 
                     Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
