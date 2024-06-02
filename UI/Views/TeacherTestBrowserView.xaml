@@ -46,7 +46,8 @@
 
                 <StackPanel Grid.Column="4">
                     <Label Content="{Binding Questions.Count}" ContentStringFormat="Кількість питань: {0}" FontSize="24"/>
-                    <Label Content="{Binding MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"/>
+                    <Label Content="{Binding MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"
+                           Visibility="{Binding HasAttempts, Converter={StaticResource BoolToVis}}"/>
                 </StackPanel>
 
                 <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0:HH:mm:ss dd.MM.yyyy}" FontSize="24"
