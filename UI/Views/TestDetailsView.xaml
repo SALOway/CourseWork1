@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="UI.Views.TestDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:UI.Views" 
+             xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TestDetailsViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="640" d:DesignWidth="1280">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid>
+        <!--Кнопка назад-->
+        <Button Content="Назад" Command="{Binding BackCommand}" FontSize="24"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Padding="25,5,25,5" Margin="10"
+                Grid.Row="0"/>
+        
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Label Content="{Binding Test.Name, FallbackValue='Test Name'}" FontSize="48"
+                   HorizontalAlignment="Center"/>
+
+            <Label Content="{Binding Test.Description, FallbackValue='Test Description'}" FontSize="24"
+                   Visibility="{Binding Test.HasDescription, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding Test.Questions.Count, FallbackValue='NULL'}"
+                   ContentStringFormat="Кількість питань: {0}"
+                   FontSize="24"/>
+
+            <Label Content="{Binding LastTestAttempt.AmountOfAnsweredQuestions, FallbackValue='NULL'}"
+                   ContentStringFormat="Кількість наданих відповідей: {0}"
+                   FontSize="24"
+                   Visibility="{Binding HasLastTestAttempt, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding LastTestAttempt.Grade, FallbackValue='NULL'}"
+                   ContentStringFormat="Оцінка: {0}"
+                   FontSize="24"
+                   Visibility="{Binding LastTestAttempt.HasGrade, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding Test.MaxPossibleGrade, FallbackValue='NULL'}"
+                   ContentStringFormat="Максимальний бал: {0}"
+                   FontSize="24"
+                   Visibility="{Binding HasLastTestAttempt, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding Test.RequiredGrade, FallbackValue='NULL'}"
+                   ContentStringFormat="Прохідний бал: {0}"
+                   FontSize="24"
+                   Visibility="{Binding Test.HasRequiredGrade, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding Test.TimeLimit, FallbackValue='NULL'}"
+                   ContentStringFormat="Час на проходження: {0:HH:mm:ss}"
+                   FontSize="24"
+                   Visibility="{Binding Test.HasTimeLimit, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+            
+            <Label Content="{Binding LastTestAttempt.LeftoverTime, FallbackValue='NULL'}"
+                   ContentStringFormat="Залишковий час після проходження: {0:HH:mm:ss}"
+                   FontSize="24"
+                   Visibility="{Binding LastTestAttempt.HasLeftoverTime, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding Test.Termin, FallbackValue='NULL'}"
+                   ContentStringFormat="Закривається о {0:HH:mm:ss dd.MM.yyyy}"
+                   FontSize="24"
+                   Visibility="{Binding Test.HasTermin, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding LastTestAttempt.StartedAt, FallbackValue='NULL'}"
+                   ContentStringFormat="Почато о {0:HH:mm:ss dd.MM.yyyy}"
+                   FontSize="24"
+                   Visibility="{Binding HasLastTestAttempt, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Label Content="{Binding LastTestAttempt.EndedAt, FallbackValue='NULL'}"
+                   ContentStringFormat="Завершено о {0:HH:mm:ss dd.MM.yyyy}"
+                   FontSize="24"
+                   Visibility="{Binding LastTestAttempt.WasEnded, FallbackValue=Collapsed, Converter={StaticResource BoolToVis}}"/>
+
+            <Button Content="Почати" FontSize="24" Command="{Binding StartNewAttemptCommand}" 
+                    Visibility="{Binding CanStart, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Продовжити" FontSize="24" Command="{Binding ContinueLastAttemptCommand}" 
+                    Visibility="{Binding CanContinue, Converter={StaticResource BoolToVis}}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
