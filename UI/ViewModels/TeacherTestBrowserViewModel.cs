@@ -26,6 +26,8 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
     private ObservableCollection<ObservableTest> _tests = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AnyTest))]
+    [NotifyPropertyChangedFor(nameof(NoAnyTest))]
     private ObservableCollection<ObservableTest> _filteredTests = [];
 
     [ObservableProperty]
