@@ -71,12 +71,6 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Back()
-    {
-        _sessionContext.CurrentState = AppState.TeacherMenu;
-    }
-
-    [RelayCommand]
     private void Search()
     {
         if (string.IsNullOrWhiteSpace(SearchText))

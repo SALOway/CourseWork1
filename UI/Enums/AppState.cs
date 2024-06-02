@@ -7,7 +7,6 @@ public enum AppState
     StudentTestBrowser = 2,
     TestDetails = 3,
     TestAttempt = 4,
-    TeacherMenu = 5,
-    TeacherTestBrowser = 6,
-    TestEditor = 7
+    TeacherTestBrowser = 5,
+    TestEditor = 6
 }

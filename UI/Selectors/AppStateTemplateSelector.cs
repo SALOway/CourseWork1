@@ -11,7 +11,6 @@ public class AppStateTemplateSelector : DataTemplateSelector
     public DataTemplate? StudentTestBrowserTemplate { get; set; }
     public DataTemplate? TestDetailsTemplate { get; set; }
     public DataTemplate? TestAttemptsTemplate { get; set; }
-    public DataTemplate? TeacherMenuTemplate { get; set; }
     public DataTemplate? TeacherTestBrowserTemplate { get; set; }
     public DataTemplate? TestEditorTemplate { get; set; }
 
@@ -28,7 +27,6 @@ public class AppStateTemplateSelector : DataTemplateSelector
             AppState.StudentTestBrowser => StudentTestBrowserTemplate,
             AppState.TestDetails => TestDetailsTemplate,
             AppState.TestAttempt => TestAttemptsTemplate,
-            AppState.TeacherMenu => TeacherMenuTemplate,
             AppState.TeacherTestBrowser => TeacherTestBrowserTemplate,
             AppState.TestEditor => TestEditorTemplate,
             _ => Placeholder,

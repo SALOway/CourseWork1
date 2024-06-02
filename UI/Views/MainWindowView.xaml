@@ -33,11 +33,6 @@
             <local:TestAttemptView IsTabStop="False"/>
         </DataTemplate>
         
-        <!--Меню вчителя-->
-        <DataTemplate x:Key="TeacherMenuTemplate" DataType="{x:Type local:TeacherMenuView}">
-            <local:TeacherMenuView IsTabStop="False"/>
-        </DataTemplate>
-        
         <!--Браузер тестів вчителя-->
         <DataTemplate x:Key="TeacherTestBrowserTemplate" DataType="{x:Type local:TeacherTestBrowserView}">
             <local:TeacherTestBrowserView IsTabStop="False"/>
@@ -54,7 +49,6 @@
                                             StudentTestBrowserTemplate="{StaticResource StudentTestBrowserTemplate}"
                                             TestDetailsTemplate="{StaticResource TestDetailsTemplate}"
                                             TestAttemptsTemplate="{StaticResource TestAttemptTemplate}"
-                                            TeacherMenuTemplate="{StaticResource TeacherMenuTemplate}"
                                             TeacherTestBrowserTemplate="{StaticResource TeacherTestBrowserTemplate}"
                                             TestEditorTemplate="{StaticResource TestEditorTemplate}"/>
     </Window.Resources>
