@@ -10,7 +10,7 @@
              d:DesignHeight="640" d:DesignWidth="1280">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <converters:AttemptStatusToStringConverter x:Key="AttStatToStr"/>
+        <converters:EnumDescriptionConverter x:Key="EnumToStr"/>
     </UserControl.Resources>
     
     <Grid>
@@ -79,7 +79,7 @@
                         <GridViewColumn Header="Статус останньої спроби" Width="300">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding LastAttemptStatus, Converter={StaticResource AttStatToStr}}"
+                                    <TextBlock Text="{Binding LastAttemptStatus, Converter={StaticResource EnumToStr}}"
                                                FontSize="24"
                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </DataTemplate>

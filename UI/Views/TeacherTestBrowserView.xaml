@@ -6,53 +6,44 @@
              xmlns:local="clr-namespace:UI.Views" 
              xmlns:viewmodels="clr-namespace:UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TeacherTestBrowserViewModel}"
              xmlns:models="clr-namespace:UI.ObservableModels"
+             xmlns:converters="clr-namespace:UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="640" d:DesignWidth="1325.551">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:EnumDescriptionConverter x:Key="EnumToStr"/>
 
         <DataTemplate x:Key="TestItemTempltate" DataType="models:ObservableTest">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <Label Content="{Binding Name}" ContentStringFormat="Назва тесту: {0}"  FontSize="24"/>
+            <Border BorderThickness="1" BorderBrush="Black" Padding="15">
+                <StackPanel>
+                    <Label Content="{Binding Name}" ContentStringFormat="Назва тесту: {0}"  FontSize="24" 
+                           Margin="0,0,0,5"/>
                     <TextBlock Text="{Binding Description, StringFormat='{}Опис: {0}'}" FontSize="24"
                                TextWrapping="Wrap"
-                               Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}"/>
-                </StackPanel>
-                
-                <Label Content="{Binding StudentGroup.Name}" ContentStringFormat="Для групи {0}" FontSize="24"
-                       Grid.Column="1"/>
-
-                <StackPanel Grid.Column="2">
-                    <Label Content="{Binding Status}" ContentStringFormat="Статус тесту: {0}"  FontSize="24"/>
-                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0:HH:mm:ss dd.MM.yyyy}"  FontSize="24"
+                               Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}"
+                               Margin="0,0,0,5" Padding="5"/>
+                    <Label Content="{Binding StudentGroup.Name}" ContentStringFormat="Для групи {0}" FontSize="24"
+                           Margin="0,0,0,5"/>
+                    <Label Content="{Binding Status, Converter={StaticResource EnumToStr}}" ContentStringFormat="Статус тесту: {0}"  
+                           FontSize="24"
+                           Margin="0,0,0,5"/>
+                    <Label Content="{Binding Termin}" ContentStringFormat="Термін: {0:HH:mm:ss dd.MM.yyyy}" FontSize="24"
+                           Margin="0,0,0,5"
                            Visibility="{Binding HasTermin, Converter={StaticResource BoolToVis}}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="3">
                     <Label Content="{Binding TimeLimit}" ContentStringFormat="Ліміт часу: {0:HH:mm:ss}"  FontSize="24"
-                           Visibility="{Binding HasTimeLimit, Converter={StaticResource BoolToVis}}"/>
+                           Margin="0,0,0,5"
+                            Visibility="{Binding HasTimeLimit, Converter={StaticResource BoolToVis}}"/>
                     <Label Content="{Binding RequiredGrade}" ContentStringFormat="Прохідний бал: {0}"  FontSize="24"
-                           Visibility="{Binding HasRequiredGrade, Converter={StaticResource BoolToVis}}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="4">
-                    <Label Content="{Binding Questions.Count}" ContentStringFormat="Кількість питань: {0}" FontSize="24"/>
+                           Margin="0,0,0,5"
+                            Visibility="{Binding HasRequiredGrade, Converter={StaticResource BoolToVis}}"/>
+                    <Label Content="{Binding Questions.Count}" ContentStringFormat="Кількість питань: {0}" FontSize="24"
+                           Margin="0,0,0,5"/>
                     <Label Content="{Binding MaxAttempts}" ContentStringFormat="Кількість спроб: {0}" FontSize="24"
+                           Margin="0,0,0,5"
                            Visibility="{Binding HasAttempts, Converter={StaticResource BoolToVis}}"/>
+                    <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0:HH:mm:ss dd.MM.yyyy}" FontSize="24"/>
                 </StackPanel>
-
-                <Label Content="{Binding UpdatedAt}" ContentStringFormat="Востаннє змінно: {0:HH:mm:ss dd.MM.yyyy}" FontSize="24"
-                       Grid.Column="5"/>
-            </Grid>
+            </Border>
         </DataTemplate>
     </UserControl.Resources>
 
