@@ -132,7 +132,7 @@ public partial class TestAttemptViewModel : ObservableObject
         MessageBoxResult answer;
         if (TestAttempt.Test!.Questions.Any(q => q.State == QuestionState.None) || !SelectedQuestion!.AnswerOptions.Any(o => o.IsChecked))
         {
-            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест? На деякі питання не було надано відповіді", "Завершити тест?", MessageBoxButton.YesNo);
+            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест? На деякі питання не було надано відповіді", "Завершити тест?", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (answer == MessageBoxResult.No)
             {
                 return;
@@ -140,7 +140,7 @@ public partial class TestAttemptViewModel : ObservableObject
         }
         else
         {
-            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест?", "Завершити тест?", MessageBoxButton.YesNo);
+            answer = MessageBox.Show("Ви впевнені що бажаєте завершити тест?", "Завершити тест?", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (answer == MessageBoxResult.No)
             {
                 return;

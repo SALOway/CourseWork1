@@ -302,7 +302,7 @@ public partial class TeacherTestBrowserViewModel : ObservableObject
         var group = getGroup.Value.FirstOrDefault();
         if (group == null)
         {
-            MessageBox.Show("Не існує жодної групи");
+            MessageBox.Show("Не існує жодної групи", "Критична помилка", MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
 

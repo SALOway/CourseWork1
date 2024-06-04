@@ -126,7 +126,7 @@ public partial class TestDetailsViewModel : ObservableObject
     [RelayCommand]
     private void StartNewAttempt()
     {
-        var messageBoxResult = MessageBox.Show("Ви впевнені що хочете почати нову спробу?", "Пітвердження початку нової спроби", MessageBoxButton.YesNo);
+        var messageBoxResult = MessageBox.Show("Ви впевнені що хочете почати нову спробу?", "Пітвердження початку нової спроби", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
         if (messageBoxResult != MessageBoxResult.Yes)
         {
