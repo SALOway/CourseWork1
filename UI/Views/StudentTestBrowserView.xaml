@@ -15,7 +15,7 @@
     
     <Grid>
         <!--Кнопка виходу з аккаунту-->
-        <Button Content="Вйти з аккаунту" FontSize="24"
+        <Button Content="Вийти з аккаунту" FontSize="24"
                 Command="{Binding LogOutCommand}"
                 HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="25,5,25,5"/>
 
