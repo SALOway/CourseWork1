@@ -146,9 +146,9 @@ public partial class TestEditorViewModel : ObservableValidator
     {
         if (Test.HasTimeLimit)
         {
-            var timeLimit = new DateTime().AddHours(TimeLimitHours!.Value)
-                                          .AddMinutes(TimeLimitMinutes!.Value)
-                                          .AddSeconds(TimeLimitSeconds!.Value);
+            var timeLimit = new DateTime().AddHours(TimeLimitHours ?? 0)
+                                          .AddMinutes(TimeLimitMinutes ?? 0)
+                                          .AddSeconds(TimeLimitSeconds ?? 0);
             Test.TimeLimit = timeLimit;
         }
 
