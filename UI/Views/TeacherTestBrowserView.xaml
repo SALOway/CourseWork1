@@ -88,7 +88,7 @@
             <ListView ItemsSource="{Binding FilteredTests}" SelectedItem="{Binding SelectedTest}" SelectionMode="Single"
                       ItemTemplate="{StaticResource TestItemTempltate}"
                       FontSize="24"
-                      HorizontalAlignment="Stretch" Margin="50,0,50,50"
+                      HorizontalAlignment="Stretch" Margin="0,0,0,50"
                       HorizontalContentAlignment="Stretch"
                       Visibility="{Binding AnyTest, Converter={StaticResource BoolToVis}}"
                       Grid.Row="1">
